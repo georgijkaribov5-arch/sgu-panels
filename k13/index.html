@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>РЎР“РЈ Рљ-13</title>
+<title>СГУ К-13</title>
 <style>
-/* РўРѕС‡РЅР°СЏ РєРѕРїРёСЏ С„РѕС‚Рѕ В«СЃС„РѕС‚РѕРіСЂР°С„РёСЂРѕРІР°Р»Рё СЃРІРµСЂС…СѓВ»: СЃРёРЅСЏСЏ С‚РєР°РЅСЊ-С„РѕРЅ, С‚С‘РјРЅР°СЏ РїР°РЅРµР»СЊ, 6 С‡С‘СЂРЅС‹С… РєР»Р°РІРёС€ 2Г—3 */
+/* Точная копия фото «сфотографировали сверху»: синяя ткань-фон, тёмная панель, 6 чёрных клавиш 2×3 */
 *{box-sizing:border-box;user-select:none;-webkit-user-select:none;touch-action:manipulation;font-family:Arial,sans-serif}
 body{
   margin:0;min-height:100vh;min-height:100dvh;
   display:flex;align-items:center;justify-content:center;padding:12px;
-  /* РЎРёРЅСЏСЏ С‚РєР°РЅСЊ РІРѕРєСЂСѓРі, РєР°Рє РЅР° С„РѕС‚Рѕ */
+  /* Синяя ткань вокруг, как на фото */
   background:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/3px 3px,
              linear-gradient(160deg,#2f57a8 0%,#24447f 55%,#1b3465 100%);
   background-blend-mode:normal;
@@ -58,7 +58,7 @@ body{
 </head>
 <body>
 <div class="panel">
-  <div class="k13">Рљ-13</div>
+  <div class="k13">К-13</div>
   <div class="keys">
     <button class="key" id="btn-short" title="SHORT"></button>
     <button class="key" id="btn-horn" title="HORN"></button>
@@ -77,7 +77,7 @@ body{
     <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.9" oninput="setMasterVolume(this.value)">
     <span id="vol-label">90</span>
   </div>
-  <div class="stat" id="disp-status">Р—РђР“Р РЈР—РљРђ...</div>
+  <div class="stat" id="disp-status">ЗАГРУЗКА...</div>
   <div class="emblem">
     <svg width="46" height="46" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
       <circle cx="32" cy="32" r="26" fill="none" stroke="#c9a93e" stroke-width="2"/>
@@ -86,7 +86,7 @@ body{
   </div>
 </div>
 
-<script>// ===== РўРѕРЅС‹ Рё СЃРѕСЃС‚РѕСЏРЅРёСЏ =====
+<script>// ===== Тоны и состояния =====
 const MODES = ['wail', 'yelp', 'hilo'];
 let modeIdx = 0;
 let sirenOn = false;
@@ -131,7 +131,7 @@ async function getBuffer(key) {
   catch (e) { return null; }
 }
 
-// РЈСЃРµС‡РµРЅРёРµ В«С…РІРѕСЃС‚Р° С‚РёС€РёРЅС‹В» РІ СЃСЌРјРїР»Рµ вЂ” РґР»СЏ РЅРµРїСЂРµСЂС‹РІРЅРѕРіРѕ Р»СѓРїР° Р±РµР· РїР°СѓР·С‹
+// Усечение «хвоста тишины» в сэмпле — для непрерывного лупа без паузы
 function trimEnd(buf) {
   const ch = buf.getChannelData(0);
   const thr = 0.005;
@@ -142,7 +142,7 @@ function trimEnd(buf) {
   return Math.min(buf.duration, end / buf.sampleRate + 0.01);
 }
 
-// ===== РћС„Р»Р°Р№РЅ-РєСЌС€ IndexedDB (РєР°Рє РІ Р“РР‘Р”Р”) =====
+// ===== Офлайн-кэш IndexedDB (как в ГИБДД) =====
 function openDB() {
   return new Promise((resolve) => {
     try {
@@ -201,7 +201,7 @@ function updateStatus(custom, cls) {
   const el = document.getElementById('disp-status');
   if (custom) { el.innerText = custom; el.className = 'sub-row ' + (cls || ''); return; }
   const n = SOUND_KEYS.filter(k => rawBuffers[k] || decodedBuffers[k]).length;
-  el.innerText = 'РћР¤Р›РђР™Рќ: ' + n + '/5 Р“РћРўРћР’Рћ';
+  el.innerText = 'ОФЛАЙН: ' + n + '/5 ГОТОВО';
 }
 
 function setMasterVolume(v) {
@@ -213,7 +213,7 @@ function setMasterVolume(v) {
   }
 }
 
-// ===== РљРЅРѕРїРєРё-СѓРґРµСЂР¶Р°РЅРёСЏ (SHORT/HORN/PULSAR/MANUAL) вЂ” РјРµС…Р°РЅРёРєР° РёР· Р“РР‘Р”Р” =====
+// ===== Кнопки-удержания (SHORT/HORN/PULSAR/MANUAL) — механика из ГИБДД =====
 async function startHold(channel, bufKey, btn) {
   unlockAudio();
   btn.classList.add('pressed', 'on-red');
@@ -222,12 +222,12 @@ async function startHold(channel, bufKey, btn) {
     activeSources[channel] = null;
   }
   const buf = await getBuffer(bufKey);
-  if (!buf || activePointers[channel] === null) { if (!buf) updateStatus('РќР•Рў Р¤РђР™Р›Рђ ' + bufKey.toUpperCase(), 'warn'); return; }
+  if (!buf || activePointers[channel] === null) { if (!buf) updateStatus('НЕТ ФАЙЛА ' + bufKey.toUpperCase(), 'warn'); return; }
   const src = audioCtx.createBufferSource();
   src.buffer = buf;
   src.loop = true;
   if (channel !== 'manual') {
-    // РҐРІРѕСЃС‚ С‚РёС€РёРЅС‹ РѕР±СЂРµР·Р°РµРј вЂ” Р·РІСѓРє РЅРµРїСЂРµСЂС‹РІРЅС‹Р№, Р±РµР· В«РїР°СѓР·С‹В» РјРµР¶РґСѓ РєСЂСѓРіР°РјРё
+    // Хвост тишины обрезаем — звук непрерывный, без «паузы» между кругами
     try { src.loopEnd = trimEnd(buf); } catch (e) {}
   }
   src.connect(boostGain);
@@ -243,7 +243,7 @@ function stopHold(channel, btn) {
   }
 }
 
-// MANUAL: СѓРґРµСЂР¶Р°РЅРёРµ СЃ РїСЂРѕРґРѕР»Р¶РµРЅРёРµРј СЃ РјРµСЃС‚Р° РїР°СѓР·С‹ (РєР°Рє РІ Hazard)
+// MANUAL: удержание с продолжением с места паузы (как в Hazard)
 async function startManual(btn) {
   unlockAudio();
   btn.classList.add('pressed', 'on-red');
@@ -278,7 +278,7 @@ function stopManual(btn) {
   }
 }
 
-// ===== SIREN Рё MODE =====
+// ===== SIREN и MODE =====
 async function startSirenLoop() {
   if (sirenSource) { try { sirenSource.stop(); sirenSource.disconnect(); } catch (e) {} sirenSource = null; }
   const tone = MODES[modeIdx];
@@ -314,7 +314,7 @@ function cycleMode() {
   if (sirenOn) startSirenLoop();
 }
 
-// ===== Pointer-РјРµС…Р°РЅРёРєР° РёР· Р“РР‘Р”Р” =====
+// ===== Pointer-механика из ГИБДД =====
 function bindMultitouchHold(id, channel, onDown, onUp) {
   const btn = document.getElementById(id);
   btn.addEventListener('pointerdown', (e) => {
@@ -356,7 +356,7 @@ function bindStrictTap(id, action) {
 
 bindMultitouchHold('btn-short', 'short', (b) => startHold('short', 'short', b), (b) => stopHold('short', b));
 bindMultitouchHold('btn-horn', 'horn', (b) => startHold('horn', 'horn', b), (b) => stopHold('horn', b));
-// PULSAR вЂ” РґРІСѓС…С‚РѕРЅРѕРІС‹Р№ СЃРёРіРЅР°Р» В«РІР°-РІР°В» (hi-lo), СѓРґРµСЂР¶Р°РЅРёРµ, РЅРµРїСЂРµСЂС‹РІРЅРѕ
+// PULSAR — двухтоновый сигнал «ва-ва» (hi-lo), удержание, непрерывно
 bindMultitouchHold('btn-pulsar', 'pulsar', (b) => startHold('pulsar', 'hilo', b), (b) => stopHold('pulsar', b));
 bindMultitouchHold('btn-manual', 'manual', (b) => startManual(b), (b) => stopManual(b));
 
