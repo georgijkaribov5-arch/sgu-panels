@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="СГУ 7007" />
+  <meta name="theme-color" content="#121417" />
+  <title>ГИБДД ПО ЧР — СГУ 7007</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #0f1114;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      color: #f1f3f5;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Текстурированный корпус пульта ГИБДД ПО ЧР Limited edition */
+    .panel {
+      position: relative;
+      background-color: #1c1e22;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 0),
+        radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 0);
+      background-size: 4px 4px;
+      background-position: 0 0, 2px 2px;
+      border: 2px solid #2e323a;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .ear {
+      position: absolute;
+      width: 7px;
+      height: 22px;
+      background: #17191c;
+      border: 1px solid #2e323a;
+    }
+    .ear.tl { top: 18px; left: -8px; border-radius: 4px 0 0 4px; }
+    .ear.bl { bottom: 18px; left: -8px; border-radius: 4px 0 0 4px; }
+    .ear.tr { top: 18px; right: -8px; border-radius: 0 4px 4px 0; }
+    .ear.br { bottom: 18px; right: -8px; border-radius: 0 4px 4px 0; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .keys-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .row-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .divider-plate {
+      border-top: 1.5px solid #e2e8f0;
+      padding: 4px 2px 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .engraving-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      text-align: center;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+    }
+
+    .key-well {
+      background: #0b0c0e;
+      border: 1.5px solid #2a2e36;
+      border-radius: 7px;
+      padding: 4px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+    }
+    .key-btn {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #252830 0%, #17191e 100%);
+      border: 1px solid #383e48;
+      border-radius: 5px;
+      padding: 4px;
+      color: #f8fafc;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      box-shadow: 0 3px 0 #070809, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.04s, box-shadow 0.04s, border-color 0.12s;
+    }
+    .key-btn:active, .key-btn.pressed {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #070809;
+      background: linear-gradient(180deg, #1e2128 0%, #131519 100%);
+    }
+    .key-led {
+      position: absolute;
+      top: 5px;
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: #0d0f12;
+      transition: 0.12s;
+    }
+    .key-btn.active-red {
+      border-color: #ff4d4f;
+    }
+    .key-btn.active-red .key-led {
+      background: #ff4d4f;
+      box-shadow: 0 0 8px #ff4d4f;
+    }
+    .key-btn.active-blue {
+      border-color: #3b82f6;
+    }
+    .key-btn.active-blue .key-led {
+      background: #3b82f6;
+      box-shadow: 0 0 8px #3b82f6;
+    }
+    .key-sub {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .brand-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      height: 100%;
+      padding: 2px 0;
+    }
+    .agency-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .agency-title {
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: 0.8px;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    }
+    .limited-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+    .shield-wrap {
+      margin: 6px 0;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.75));
+    }
+    .serial-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .serial-num {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    }
+    .disp-status {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 3px 7px;
+      border-radius: 5px;
+      border: 1px solid #2b303a;
+    }
+    .disp-status.ok {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.35);
+    }
+    .disp-status.warn {
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.35);
+    }
+
+    /* Нижний блок: тангента PTT (строго по удержанию), громкость, бинды и звуки */
+    .bottom-panel {
+      background: linear-gradient(180deg, #1b1e23 0%, #14161a 100%);
+      border: 2px solid #2b2f36;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ptt-btn {
+      width: 100%;
+      background: linear-gradient(180deg, #1e2d42 0%, #152030 100%);
+      border: 1px solid #2e4a70;
+      border-radius: 9px;
+      padding: 13px;
+      color: #e2e8f0;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0b111a;
+      transition: 0.06s;
+    }
+    .ptt-btn:active, .ptt-btn.pressed {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #0b111a;
+      background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+      border-color: #f87171;
+      color: #fff;
+    }
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      flex-wrap: wrap;
+    }
+    .controls-bar input[type="range"] {
+      flex: 1;
+      min-width: 90px;
+      accent-color: #ef4444;
+      cursor: pointer;
+    }
+    .vol-val {
+      min-width: 34px;
+      text-align: right;
+      color: #f1f5f9;
+    }
+    .gear-btn {
+      background: #23272f;
+      border: 1px solid #373d49;
+      color: #e2e8f0;
+      border-radius: 7px;
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .gear-btn:hover {
+      background: #2d323c;
+    }
+
+    /* Модальные окна */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 440px;
+      background: #1a1d23;
+      border: 1px solid #343a46;
+      border-radius: 14px;
+      padding: 16px;
+      color: #f1f3f5;
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 13.5px;
+      margin-bottom: 8px;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-hint {
+      font-size: 11.5px;
+      color: #94a3b8;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .slot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .slot-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #121418;
+      border: 1px solid #282c34;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+    .slot-name {
+      font-weight: 700;
+    }
+    .slot-state {
+      font-size: 10.5px;
+      color: #64748b;
+      margin-left: 6px;
+    }
+    .slot-state.loaded {
+      color: #4ade80;
+    }
+    .file-label, .bind-key-btn {
+      background: #272c36;
+      border: 1px solid #3d4452;
+      color: #f8fafc;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      min-width: 78px;
+      text-align: center;
+    }
+    .bind-key-btn.listening {
+      background: #1d4ed8;
+      border-color: #60a5fa;
+      color: #fff;
+    }
+    .file-label input {
+      display: none;
+    }
+    .reset-cache-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: #3b181c;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .panel { padding: 12px; }
+      .ear { display: none; }
+      .main-grid { grid-template-columns: 1.6fr 0.95fr; gap: 10px; }
+      .row-grid { gap: 6px; }
+      .engraving-row { font-size: 9px; letter-spacing: 0.2px; }
+      .agency-title { font-size: 14px; }
+      .limited-text { font-size: 9.5px; }
+      .shield-wrap svg { width: 46px; height: 54px; }
+      .serial-num { font-size: 14px; }
+      .disp-status { font-size: 8.5px; padding: 2px 5px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="panel">
+    <div class="ear tl"></div>
+    <div class="ear bl"></div>
+    <div class="ear tr"></div>
+    <div class="ear br"></div>
+
+    <div class="main-grid">
+      <div class="keys-zone">
+        <div class="row-grid">
+          <div class="key-well">
+            <button class="key-btn" id="btn-short" type="button">
+              <div class="key-led"></div>
+            </button>
+          </div>
+
+          <div class="key-well">
+            <button class="key-btn" id="btn-horn" type="button">
+              <div class="key-led"></div>
+            </button>
+          </div>
+
+          <div></div>
+        </div>
+
+        <div class="divider-plate">
+          <div class="engraving-row">
+            <span>SHORT</span>
+            <span>HORN</span>
+            <span></span>
+          </div>
+          <div class="engraving-row">
+            <span>SIREN</span>
+            <span>MANUAL</span>
+            <span>MODE</span>
+          </div>
+        </div>
+
+        <div class="row-grid">
+          <div class="key-well">
+            <button class="key-btn" id="btn-siren" type="button">
+              <div class="key-led"></div>
+              <div class="key-sub" id="siren-sub">ВЫКЛ</div>
+            </button>
+          </div>
+
+          <div class="key-well">
+            <button class="key-btn" id="btn-manual" type="button">
+              <div class="key-led"></div>
+              <div class="key-sub" id="manual-sub">ПАУЗА</div>
+            </button>
+          </div>
+
+          <div class="key-well">
+            <button class="key-btn active-blue" id="btn-mode" type="button">
+              <div class="key-led"></div>
+              <div class="key-sub" id="mode-sub">WAIL</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-side">
+        <div class="agency-wrap">
+          <div class="agency-title">ГИБДД<br>ПО ЧР</div>
+          <div class="limited-text">Limited edition</div>
+        </div>
+
+        <div class="shield-wrap">
+          <svg width="58" height="68" viewBox="0 0 64 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 3L59 13V36C59 54 46.5 66.5 32 73C17.5 66.5 5 54 5 36V13L32 3Z" fill="#182232" stroke="#D4AF37" stroke-width="3.5"/>
+            <path d="M32 8L54 16.2V35.8C54 50.8 43.8 61.5 32 67.2C20.2 61.5 10 50.8 10 35.8V16.2L32 8Z" stroke="#9A7B22" stroke-width="1.2"/>
+            <polygon points="32,17 35.5,27.5 46.5,27.5 37.5,34 41,44.5 32,38 23,44.5 26.5,34 17.5,27.5 28.5,27.5" fill="#EAB308"/>
+            <rect x="17" y="48" width="30" height="9" rx="2" fill="#D4AF37"/>
+            <text x="32" y="54.8" text-anchor="middle" fill="#111827" font-size="6.8" font-weight="900" font-family="Arial">ГИБДД</text>
+          </svg>
+        </div>
+
+        <div class="serial-wrap">
+          <div class="serial-num">9/20</div>
+          <div class="disp-status" id="disp-status">ЗАГРУЗКА...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-panel">
+    <button class="ptt-btn" id="btn-ptt" type="button">
+      🎤 ГРОМКОГОВОРИТЕЛЬ (ДЕРЖАТЬ)
+    </button>
+
+    <div class="controls-bar">
+      <span>ГРОМКОСТЬ</span>
+      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.9" oninput="setMasterVolume(this.value)">
+      <span class="vol-val" id="vol-label">90%</span>
+      <button class="gear-btn" type="button" onclick="openBindsModal()">⌨ БИНДЫ</button>
+      <button class="gear-btn" type="button" onclick="openModal()">⚙ ЗВУКИ</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <span>ОФЛАЙН-БАЗА ЗВУКОВ (5 ФАЙЛОВ)</span>
+      <button class="close-btn" type="button" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-hint">
+      При первом открытии с интернетом звуки (<b>short, horn, wail, yelp, hilo</b>) сохраняются в память устройства и дальше работают без сети.
+    </div>
+    <div class="slot-list" id="slot-list"></div>
+    <button class="reset-cache-btn" type="button" onclick="clearAudioCache()">🗑 СБРОСИТЬ КЭШ И ПЕРЕЗАГРУЗИТЬ</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="binds-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <span>НАСТРОЙКА БИНДОВ КЛАВИАТУРЫ</span>
+      <button class="close-btn" type="button" onclick="closeBindsModal()">✕</button>
+    </div>
+    <div class="modal-hint">
+      Нажми на кнопку справа от действия и нажми нужную клавишу на клавиатуре (Escape — отмена). Бинды сохраняются автоматически.
+    </div>
+    <div class="slot-list" id="binds-list"></div>
+    <button class="reset-cache-btn" type="button" onclick="resetBinds()">↺ СБРОСИТЬ БИНДЫ ПО УМОЛЧАНИЮ</button>
+  </div>
+</div>
+
+<script>
+  const SOUND_KEYS = [
+    { key: 'short', label: 'SHORT (Кряк 1)' },
+    { key: 'horn',  label: 'HORN (Кряк 2)' },
+    { key: 'wail',  label: 'WAIL (Сирена 1)' },
+    { key: 'yelp',  label: 'YELP (Сирена 2)' },
+    { key: 'hilo',  label: 'HI-LO (Сирена 3)' }
+  ];
+
+  const BIND_ACTIONS = [
+    { action: 'short',  label: 'SHORT (Кряк 1 — держать)' },
+    { action: 'horn',   label: 'HORN (Кряк 2 — держать)' },
+    { action: 'siren',  label: 'SIREN (Сирена вкл/выкл)' },
+    { action: 'manual', label: 'MANUAL (Ручной — держать)' },
+    { action: 'mode',   label: 'MODE (Смена тона)' },
+    { action: 'ptt',    label: 'ГРОМКОГОВОРИТЕЛЬ (PTT — держать)' }
+  ];
+
+  const DEFAULT_BINDS = {
+    short: 'KeyQ',
+    horn: 'KeyW',
+    siren: 'KeyS',
+    manual: 'KeyM',
+    mode: 'KeyD',
+    ptt: 'KeyT'
+  };
+
+  let keyBinds = loadBinds();
+  let listeningAction = null;
+
+  function loadBinds() {
+    try {
+      const saved = localStorage.getItem('SGU_7007_BINDS');
+      if (saved) return Object.assign({}, DEFAULT_BINDS, JSON.parse(saved));
+    } catch (e) {}
+    return Object.assign({}, DEFAULT_BINDS);
+  }
+
+  function saveBinds() {
+    try {
+      localStorage.setItem('SGU_7007_BINDS', JSON.stringify(keyBinds));
+    } catch (e) {}
+  }
+
+  function formatKeyCode(code) {
+    if (!code) return 'НЕТ';
+    if (code.startsWith('Key')) return code.slice(3);
+    if (code.startsWith('Digit')) return code.slice(5);
+    if (code.startsWith('Numpad')) return 'NUM ' + code.slice(6);
+    if (code === 'Space') return 'ПРОБЕЛ';
+    if (code === 'ShiftLeft' || code === 'ShiftRight') return 'SHIFT';
+    if (code === 'ControlLeft' || code === 'ControlRight') return 'CTRL';
+    if (code === 'AltLeft' || code === 'AltRight') return 'ALT';
+    return code.toUpperCase();
+  }
+
+  function renderBindsList() {
+    const list = document.getElementById('binds-list');
+    list.innerHTML = '';
+    BIND_ACTIONS.forEach(({ action, label }) => {
+      const isListening = listeningAction === action;
+      const div = document.createElement('div');
+      div.className = 'slot-item';
+      div.innerHTML = `
+        <span class="slot-name">${label}</span>
+        <button type="button" class="bind-key-btn ${isListening ? 'listening' : ''}" onclick="startListenBind('${action}')">
+          ${isListening ? 'НАЖМИТЕ...' : formatKeyCode(keyBinds[action])}
+        </button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function openBindsModal() {
+    listeningAction = null;
+    renderBindsList();
+    document.getElementById('binds-modal').classList.add('open');
+  }
+
+  function closeBindsModal() {
+    listeningAction = null;
+    document.getElementById('binds-modal').classList.remove('open');
+  }
+
+  function startListenBind(action) {
+    listeningAction = action;
+    renderBindsList();
+  }
+
+  function resetBinds() {
+    keyBinds = Object.assign({}, DEFAULT_BINDS);
+    listeningAction = null;
+    saveBinds();
+    renderBindsList();
+  }
+
+  const MODES = ['wail', 'yelp', 'hilo'];
+  let modeIdx = 0;
+  let sirenOn = false;
+  let masterVol = 0.9;
+
+  let audioCtx = null;
+  let sirenGain = null;
+  let boostGain = null;
+  let limiter = null;
+
+  const rawBuffers = {};
+  const decodedBuffers = {};
+
+  const activePointers = {
+    short: null,
+    horn: null,
+    manual: null
+  };
+  const activeSources = {
+    short: null,
+    horn: null,
+    manual: null
+  };
+
+  let sirenSource = null;
+
+  let manualOffset = 0;
+  let manualStartTime = 0;
+  let manualPlaying = false;
+
+  // Переменные микрофона PTT (звук идёт строго пока кнопка удерживается)
+  let micStream = null;
+  let micNodes = [];
+  let pttPointerId = null;
+
+  function unlockAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = new AC();
+
+      limiter = audioCtx.createDynamicsCompressor();
+      limiter.threshold.value = -3;
+      limiter.knee.value = 6;
+      limiter.ratio.value = 12;
+      limiter.attack.value = 0.002;
+      limiter.release.value = 0.08;
+      limiter.connect(audioCtx.destination);
+
+      sirenGain = audioCtx.createGain();
+      sirenGain.gain.value = masterVol;
+      sirenGain.connect(limiter);
+
+      boostGain = audioCtx.createGain();
+      boostGain.gain.value = masterVol * 2.65;
+      boostGain.connect(limiter);
+    }
+
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+
+    try {
+      const silent = audioCtx.createBuffer(1, 1, 22050);
+      const src = audioCtx.createBufferSource();
+      src.buffer = silent;
+      src.connect(audioCtx.destination);
+      src.start(0);
+    } catch (e) {}
+  }
+
+  function decodeAudioSafe(arrayBuf) {
+    return new Promise((resolve, reject) => {
+      if (!audioCtx) return reject(new Error('No AudioContext'));
+      const copy = arrayBuf.slice(0);
+      const res = audioCtx.decodeAudioData(
+        copy,
+        (decoded) => resolve(decoded),
+        (err) => reject(err)
+      );
+      if (res && typeof res.then === 'function') {
+        res.then(resolve).catch(reject);
+      }
+    });
+  }
+
+  async function getBuffer(key) {
+    if (decodedBuffers[key]) return decodedBuffers[key];
+    if (!rawBuffers[key] || !audioCtx) return null;
+    try {
+      const decoded = await decodeAudioSafe(rawBuffers[key]);
+      decodedBuffers[key] = decoded;
+      return decoded;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function openDB() {
+    return new Promise((resolve) => {
+      try {
+        if (!window.indexedDB) return resolve(null);
+        const req = indexedDB.open('SGU_7007_OFFLINE', 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('sounds')) {
+            db.createObjectStore('sounds');
+          }
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = () => resolve(null);
+      } catch (e) {
+        resolve(null);
+      }
+    });
+  }
+
+  async function saveToDB(key, arrayBuf) {
+    const db = await openDB();
+    if (!db) return;
+    return new Promise((resolve) => {
+      try {
+        const tx = db.transaction('sounds', 'readwrite');
+        tx.objectStore('sounds').put(arrayBuf.slice(0), key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      } catch (e) {
+        resolve();
+      }
+    });
+  }
+
+  async function loadFromDB(key) {
+    const db = await openDB();
+    if (!db) return null;
+    return new Promise((resolve) => {
+      try {
+        const tx = db.transaction('sounds', 'readonly');
+        const req = tx.objectStore('sounds').get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      } catch (e) {
+        resolve(null);
+      }
+    });
+  }
+
+  async function clearAudioCache() {
+    const db = await openDB();
+    if (db) {
+      await new Promise((resolve) => {
+        try {
+          const tx = db.transaction('sounds', 'readwrite');
+          tx.objectStore('sounds').clear();
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        } catch (e) {
+          resolve();
+        }
+      });
+    }
+    SOUND_KEYS.forEach(({ key }) => {
+      delete rawBuffers[key];
+      delete decodedBuffers[key];
+    });
+    updateStatusDisplay('КЭШ ОЧИЩЕН...', 'warn');
+    await initSounds();
+  }
+
+  function setMasterVolume(val) {
+    masterVol = parseFloat(val);
+    document.getElementById('vol-label').innerText = Math.round(masterVol * 100) + '%';
+    if (sirenGain && audioCtx) {
+      sirenGain.gain.setTargetAtTime(masterVol, audioCtx.currentTime, 0.02);
+      boostGain.gain.setTargetAtTime(masterVol * 2.65, audioCtx.currentTime, 0.02);
+    }
+  }
+
+  function updateStatusDisplay(customText, cssClass) {
+    const el = document.getElementById('disp-status');
+    if (customText) {
+      el.innerText = customText;
+      el.className = 'disp-status ' + (cssClass || '');
+      return;
+    }
+    const count = SOUND_KEYS.filter(s => !!(rawBuffers[s.key] || decodedBuffers[s.key])).length;
+    el.innerText = `ОФЛАЙН: ${count}/5 ГОТОВО`;
+    el.className = 'disp-status ' + (count === 5 ? 'ok' : (count > 0 ? 'warn' : ''));
+  }
+
+  async function initSounds() {
+    const exts = ['mp3', 'wav', 'ogg', 'm4a'];
+    const folders = ['', 'sounds/'];
+
+    await Promise.all(SOUND_KEYS.map(async ({ key }) => {
+      const cached = await loadFromDB(key);
+      if (cached) {
+        rawBuffers[key] = cached;
+        return;
+      }
+
+      for (const folder of folders) {
+        for (const ext of exts) {
+          const url = `${folder}${key}.${ext}`;
+          try {
+            const res = await fetch(url);
+            if (!res.ok) continue;
+            const ctype = res.headers.get('content-type') || '';
+            if (ctype.includes('text/html')) continue;
+            const arr = await res.arrayBuffer();
+            if (arr && arr.byteLength > 100) {
+              rawBuffers[key] = arr;
+              await saveToDB(key, arr);
+              return;
+            }
+          } catch (e) {}
+        }
+      }
+    }));
+
+    updateStatusDisplay();
+    renderSlots();
+  }
+
+  async function loadManualFile(key, input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    unlockAudio();
+    try {
+      const arr = await file.arrayBuffer();
+      rawBuffers[key] = arr;
+      delete decodedBuffers[key];
+      await getBuffer(key);
+      await saveToDB(key, arr);
+      updateStatusDisplay();
+      renderSlots();
+    } catch (e) {
+      alert('Не удалось прочитать файл: ' + file.name);
+    }
+  }
+
+  function renderSlots() {
+    const list = document.getElementById('slot-list');
+    list.innerHTML = '';
+    SOUND_KEYS.forEach(({ key, label }) => {
+      const loaded = !!(rawBuffers[key] || decodedBuffers[key]);
+      const div = document.createElement('div');
+      div.className = 'slot-item';
+      div.innerHTML = `
+        <div>
+          <span class="slot-name">${label}</span>
+          <span class="slot-state ${loaded ? 'loaded' : ''}">${loaded ? '● В ПАМЯТИ' : '○ НЕТ ФАЙЛА'}</span>
+        </div>
+        <label class="file-label">
+          ВЫБРАТЬ
+          <input type="file" accept="audio/*,video/*" onchange="loadManualFile('${key}', this)">
+        </label>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function openModal() {
+    renderSlots();
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  function forceStopSirenOnly() {
+    sirenOn = false;
+    document.getElementById('btn-siren').classList.remove('active-red');
+    document.getElementById('siren-sub').innerText = 'ВЫКЛ';
+    if (sirenSource) {
+      try { sirenSource.stop(); sirenSource.disconnect(); } catch (e) {}
+      sirenSource = null;
+    }
+  }
+
+  async function startHold(channel, btn) {
+    unlockAudio();
+    btn.classList.add('pressed', 'active-red');
+
+    if (activeSources[channel]) {
+      try { activeSources[channel].stop(); activeSources[channel].disconnect(); } catch (err) {}
+      activeSources[channel] = null;
+    }
+
+    const buf = await getBuffer(channel);
+    if (!buf || activePointers[channel] === null) {
+      if (!buf) updateStatusDisplay(`НЕТ ФАЙЛА ${channel.toUpperCase()}`, 'warn');
+      return;
+    }
+
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    src.connect(boostGain);
+    src.start(0);
+    activeSources[channel] = src;
+  }
+
+  function stopHold(channel, btn) {
+    btn.classList.remove('pressed', 'active-red');
+    if (activeSources[channel]) {
+      try { activeSources[channel].stop(); activeSources[channel].disconnect(); } catch (err) {}
+      activeSources[channel] = null;
+    }
+    updateStatusDisplay();
+  }
+
+  async function startManual(btn) {
+    unlockAudio();
+    btn.classList.add('pressed', 'active-red');
+    document.getElementById('manual-sub').innerText = 'ИГРАЕТ';
+
+    if (sirenOn) {
+      forceStopSirenOnly();
+    }
+
+    if (activeSources.manual) {
+      try { activeSources.manual.stop(); activeSources.manual.disconnect(); } catch (e) {}
+      activeSources.manual = null;
+    }
+
+    const toneKey = MODES[modeIdx];
+    const buf = await getBuffer(toneKey);
+    if (!buf || activePointers.manual === null) {
+      if (!buf) updateStatusDisplay(`НЕТ ФАЙЛА ${toneKey.toUpperCase()}`, 'warn');
+      return;
+    }
+
+    const safeOffset = (buf.duration > 0) ? (manualOffset % buf.duration) : 0;
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    src.connect(boostGain);
+    src.start(0, safeOffset);
+
+    activeSources.manual = src;
+    manualStartTime = audioCtx.currentTime;
+    manualPlaying = true;
+  }
+
+  function stopManual(btn) {
+    btn.classList.remove('pressed', 'active-red');
+    document.getElementById('manual-sub').innerText = 'ПАУЗА';
+
+    if (manualPlaying && audioCtx) {
+      const elapsed = audioCtx.currentTime - manualStartTime;
+      const toneKey = MODES[modeIdx];
+      const buf = decodedBuffers[toneKey];
+      if (buf && buf.duration > 0) {
+        manualOffset = (manualOffset + elapsed) % buf.duration;
+      }
+      manualPlaying = false;
+    }
+
+    if (activeSources.manual) {
+      try { activeSources.manual.stop(); activeSources.manual.disconnect(); } catch (e) {}
+      activeSources.manual = null;
+    }
+    updateStatusDisplay();
+  }
+
+  async function startSirenLoop() {
+    if (sirenSource) {
+      try { sirenSource.stop(); sirenSource.disconnect(); } catch (e) {}
+      sirenSource = null;
+    }
+    const tone = MODES[modeIdx];
+    const buf = await getBuffer(tone);
+    if (!buf || !sirenOn) {
+      if (!buf) updateStatusDisplay(`НЕТ ФАЙЛА ${tone.toUpperCase()}`, 'warn');
+      return;
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    src.connect(sirenGain);
+    src.start(0);
+    sirenSource = src;
+  }
+
+  function toggleSiren() {
+    unlockAudio();
+    sirenOn = !sirenOn;
+    const btn = document.getElementById('btn-siren');
+    const sub = document.getElementById('siren-sub');
+    if (sirenOn) {
+      btn.classList.add('active-red');
+      sub.innerText = 'ВКЛ';
+      startSirenLoop();
+    } else {
+      forceStopSirenOnly();
+      updateStatusDisplay();
+    }
+  }
+
+  function cycleMode() {
+    unlockAudio();
+    modeIdx = (modeIdx + 1) % MODES.length;
+    const toneName = MODES[modeIdx].toUpperCase();
+    document.getElementById('mode-sub').innerText = toneName;
+
+    manualOffset = 0;
+    if (manualPlaying) {
+      startManual(document.getElementById('btn-manual'));
+    }
+    if (sirenOn) {
+      startSirenLoop();
+    }
+  }
+
+  function bindMultitouchHold(id, channel, onDown, onUp) {
+    const btn = document.getElementById(id);
+
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (activePointers[channel] !== null) return;
+      activePointers[channel] = e.pointerId;
+      if (btn.setPointerCapture) {
+        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      onDown(btn);
+    });
+
+    const releaseHandler = (e) => {
+      if (activePointers[channel] !== e.pointerId) return;
+      e.preventDefault();
+      e.stopPropagation();
+      activePointers[channel] = null;
+      onUp(btn);
+    };
+
+    btn.addEventListener('pointerup', releaseHandler);
+    btn.addEventListener('pointercancel', releaseHandler);
+  }
+
+  function bindStrictTap(id, action) {
+    const btn = document.getElementById(id);
+    let tapPointer = null;
+
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (tapPointer !== null) return;
+      tapPointer = e.pointerId;
+      btn.classList.add('pressed');
+      if (btn.setPointerCapture) {
+        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      action();
+    });
+
+    const endTap = (e) => {
+      if (tapPointer !== e.pointerId) return;
+      tapPointer = null;
+      btn.classList.remove('pressed');
+    };
+
+    btn.addEventListener('pointerup', endTap);
+    btn.addEventListener('pointercancel', endTap);
+  }
+
+  // Строгий режим удержания для громкоговорителя (PTT)
+  function makeHornDistortion(amount) {
+    const n = 44100;
+    const curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (i * 2) / n - 1;
+      curve[i] = ((3 + amount) * x * 20 * (Math.PI / 180)) / (Math.PI + amount * Math.abs(x));
+    }
+    return curve;
+  }
+
+  async function startPTT() {
+    const btn = document.getElementById('btn-ptt');
+    btn.classList.add('pressed');
+    btn.innerText = '🔴 ЭФИР ИДЁТ (ОТПУСТИТЕ ДЛЯ ВЫКЛ)';
+    unlockAudio();
+
+    try {
+      if (!micStream) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('Нужен HTTPS');
+        }
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: false
+          }
+        });
+      }
+
+      if (pttPointerId === null) {
+        stopPTT();
+        return;
+      }
+
+      micStream.getAudioTracks().forEach(t => { t.enabled = true; });
+
+      const source = audioCtx.createMediaStreamSource(micStream);
+
+      const hpFilter = audioCtx.createBiquadFilter();
+      hpFilter.type = 'highpass';
+      hpFilter.frequency.value = 460;
+      hpFilter.Q.value = 0.8;
+
+      const peakFilter = audioCtx.createBiquadFilter();
+      peakFilter.type = 'peaking';
+      peakFilter.frequency.value = 1350;
+      peakFilter.Q.value = 1.6;
+      peakFilter.gain.value = 11;
+
+      const lpFilter = audioCtx.createBiquadFilter();
+      lpFilter.type = 'lowpass';
+      lpFilter.frequency.value = 2900;
+      lpFilter.Q.value = 0.9;
+
+      const shaper = audioCtx.createWaveShaper();
+      shaper.curve = makeHornDistortion(18);
+      shaper.oversample = '2x';
+
+      const hornGain = audioCtx.createGain();
+      hornGain.gain.value = masterVol * 2.4;
+
+      const delay = audioCtx.createDelay();
+      delay.delayTime.value = 0.13;
+      const echoGain = audioCtx.createGain();
+      echoGain.gain.value = 0.24;
+
+      source.connect(hpFilter);
+      hpFilter.connect(peakFilter);
+      peakFilter.connect(lpFilter);
+      lpFilter.connect(shaper);
+      shaper.connect(hornGain);
+
+      hornGain.connect(limiter);
+      hornGain.connect(delay);
+      delay.connect(echoGain);
+      echoGain.connect(limiter);
+
+      micNodes = [source, hpFilter, peakFilter, lpFilter, shaper, hornGain, delay, echoGain];
+      updateStatusDisplay('РУПОР В ЭФИРЕ', 'ok');
+    } catch (err) {
+      pttPointerId = null;
+      stopPTT();
+      updateStatusDisplay('НЕТ ДОСТУПА К МИКРОФОНУ', 'warn');
+    }
+  }
+
+  function stopPTT() {
+    pttPointerId = null;
+    const btn = document.getElementById('btn-ptt');
+    btn.classList.remove('pressed');
+    btn.innerText = '🎤 ГРОМКОГОВОРИТЕЛЬ (ДЕРЖАТЬ)';
+
+    micNodes.forEach(node => {
+      try { node.disconnect(); } catch (e) {}
+    });
+    micNodes = [];
+
+    if (micStream) {
+      micStream.getTracks().forEach(t => {
+        t.enabled = false;
+        t.stop();
+      });
+      micStream = null;
+    }
+
+    updateStatusDisplay();
+  }
+
+  bindMultitouchHold('btn-short', 'short', (b) => startHold('short', b), (b) => stopHold('short', b));
+  bindMultitouchHold('btn-horn', 'horn', (b) => startHold('horn', b), (b) => stopHold('horn', b));
+  bindMultitouchHold('btn-manual', 'manual', (b) => startManual(b), (b) => stopManual(b));
+
+  bindStrictTap('btn-siren', toggleSiren);
+  bindStrictTap('btn-mode', cycleMode);
+
+  const pttBtn = document.getElementById('btn-ptt');
+  pttBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (pttPointerId !== null) return;
+    pttPointerId = e.pointerId;
+    if (pttBtn.setPointerCapture) {
+      try { pttBtn.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    startPTT();
+  });
+  const endPTT = (e) => {
+    if (pttPointerId !== e.pointerId) return;
+    stopPTT();
+  };
+  pttBtn.addEventListener('pointerup', endPTT);
+  pttBtn.addEventListener('pointercancel', endPTT);
+  window.addEventListener('blur', () => {
+    if (pttPointerId !== null) stopPTT();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (listeningAction) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.code !== 'Escape') {
+        keyBinds[listeningAction] = e.code;
+        saveBinds();
+      }
+      listeningAction = null;
+      renderBindsList();
+      return;
+    }
+
+    if (e.repeat) return;
+    const code = e.code;
+
+    if (code === keyBinds.short && activePointers.short === null) {
+      e.preventDefault();
+      activePointers.short = 'kbd';
+      startHold('short', document.getElementById('btn-short'));
+    } else if (code === keyBinds.horn && activePointers.horn === null) {
+      e.preventDefault();
+      activePointers.horn = 'kbd';
+      startHold('horn', document.getElementById('btn-horn'));
+    } else if (code === keyBinds.manual && activePointers.manual === null) {
+      e.preventDefault();
+      activePointers.manual = 'kbd';
+      startManual(document.getElementById('btn-manual'));
+    } else if (code === keyBinds.siren) {
+      e.preventDefault();
+      toggleSiren();
+    } else if (code === keyBinds.mode) {
+      e.preventDefault();
+      cycleMode();
+    } else if (code === keyBinds.ptt && pttPointerId === null) {
+      e.preventDefault();
+      pttPointerId = 'kbd';
+      startPTT();
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (listeningAction) return;
+    const code = e.code;
+
+    if (code === keyBinds.short && activePointers.short === 'kbd') {
+      activePointers.short = null;
+      stopHold('short', document.getElementById('btn-short'));
+    } else if (code === keyBinds.horn && activePointers.horn === 'kbd') {
+      activePointers.horn = null;
+      stopHold('horn', document.getElementById('btn-horn'));
+    } else if (code === keyBinds.manual && activePointers.manual === 'kbd') {
+      activePointers.manual = null;
+      stopManual(document.getElementById('btn-manual'));
+    } else if (code === keyBinds.ptt && pttPointerId === 'kbd') {
+      stopPTT();
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', initSounds);
+</script>
+</body>
+</html>
