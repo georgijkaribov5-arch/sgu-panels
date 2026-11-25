@@ -17,6 +17,8 @@ h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px}
 .choice:hover{transform:translateY(-3px);border-color:#d5b957}
 .choice strong{display:block;font-size:clamp(17px,3vw,23px);margin-bottom:9px}
 .choice span{font-size:13px;color:#b8c0ca}
+    .choice .credit{display:block;margin-top:6px;font-size:11px;color:#d5b957}
+    .choice .credit{display:block;margin-top:6px;font-size:11px;color:#d5b957;text-transform:none}
 #app{display:none;position:fixed;inset:0;background:#0f1114}
 #app iframe{border:0;width:100%;height:100%;display:block}
 #back{position:fixed;z-index:10;top:12px;left:12px;border:1px solid #555d69;border-radius:9px;background:#171b22eF;color:#fff;padding:10px 14px;font-weight:700;cursor:pointer}
@@ -29,13 +31,13 @@ h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px}
   <p class="sub">Выберите пульт для запуска</p>
   <div class="choices">
     <button class="choice" onclick="openPanel('gibdd/index.html')">
-      <strong>ГИБДД по ЧР</strong><span>Пульт СГУ ГИБДД</span>
+      <strong>ГИБДД по ЧР</strong><span>Пульт СГУ ГИБДД</span><span class="credit">shama&amp;by grek</span>
     </button>
     <button class="choice" onclick="openPanel('hazard/index.html')">
-      <strong>Premier Hazard 7007</strong><span>Пульт Hazard 7007</span>
+      <strong>Premier Hazard 7007</strong><span>Пульт Hazard 7007</span><span class="credit">shama&amp;by grek</span>
     </button>
     <button class="choice" onclick="openPanel('k13/index.html')">
-      <strong>СГУ К-13</strong><span>Пульт К-13</span>
+      <strong>СГУ К-13</strong><span>Пульт К-13</span><span class="credit">shama&amp;by grek</span>
     </button>
   </div>
 </main>
