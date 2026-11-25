@@ -7,7 +7,7 @@
 <style>
   * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #141416; font-family: 'Arial Narrow', Arial, sans-serif; }
-  .unit { position: relative; display: flex; align-items: center; filter: drop-shadow(0 20px 30px #000); }
+  .unit { position: relative; display: flex; align-items: center; box-shadow: 0 20px 30px #000; }
   .ear { width: 38px; height: 112px; position: relative; z-index: 1; background: linear-gradient(180deg, #2b2b2e 0%, #19191b 55%, #101012 100%); border: 1px solid #353538; box-shadow: inset 0 2px 2px rgba(255,255,255,.12); }
   .ear.l { border-radius: 12px 0 0 12px; margin-right: -4px; }
   .ear.r { border-radius: 0 12px 12px 0; margin-left: -4px; }
@@ -48,7 +48,7 @@
   .knob { position: absolute; border-radius: 50%; cursor: pointer; box-shadow: 0 10px 18px rgba(0,0,0,.95), 0 3px 5px #000, 0 0 0 2px #09090a; }
   .k-vol  { top: 16px; left: 25px; width: 72px; height: 72px; }
   .k-mode { top: 10px; right: 16px; width: 96px; height: 96px; }
-  .k-gear { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#303034 0deg 6deg, #121214 6deg 12deg); transition: transform .15s ease-out; }
+  .k-gear { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#303034 0deg 6deg, #121214 6deg 12deg); transition: transform .15s ease-out; will-change: transform; }
   .k-top { width: 75%; height: 75%; border-radius: 50%; position: relative; background: radial-gradient(circle at 35% 30%, #36363a, #1e1e21 65%, #111113); box-shadow: inset 0 1.5px 2px rgba(255,255,255,.2), 0 2px 5px #000; }
   .k-top::before { content: ''; position: absolute; top: 6%; bottom: 6%; left: 50%; transform: translateX(-50%); width: 10px; border-radius: 3px; background: linear-gradient(90deg, #222225, #323236 50%, #18181a); box-shadow: -2px 0 3px rgba(0,0,0,.6), 2px 0 3px rgba(0,0,0,.6); }
   .k-top::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4.5px; height: 8px; background: #f5f5f7; border-radius: 1px; z-index: 2; }
@@ -145,29 +145,18 @@
     s.currentTime = 0;
   }
   let audioContext = null;
-  let trillTimer = null;
-  let trillOsc = null;
-  let trillGain = null;
 
   function vibrate(ms = 20) {
     if (navigator.vibrate) navigator.vibrate(ms);
   }
 
   function stopTrill() {
-    if (trillTimer) {
-      clearInterval(trillTimer);
-      trillTimer = null;
-    }
-    if (trillGain && audioContext) {
-      try { trillGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.015); } catch (e) {}
-    }
-    if (trillOsc) {
-      try { trillOsc.stop(); } catch (e) {}
-      trillOsc = null;
-    }
-    trillGain = null;
+    // Остановка аудио-цепочки трели (без JS-таймеров)
+    trillNodes.forEach(node => { try { node.stop && node.stop(); node.disconnect(); } catch (e) {} });
+    trillNodes = [];
   }
 
+  const trillNodes = [];
   async function startTrill() {
     stopTrill();
     try {
@@ -176,32 +165,40 @@
       audioContext = audioContext || new AudioCtx();
       if (audioContext.state === 'suspended') await audioContext.resume();
 
+      // Основа: меандр с биением частоты (вобуляция вместо setInterval)
       const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
       osc.type = 'square';
-      osc.frequency.value = 760;
+      osc.frequency.value = 800;
+      // Медленный меандр модулирует частоту основного тона: 680 <-> 920
+      const freqLfo = audioContext.createOscillator();
+      freqLfo.type = 'square';
+      freqLfo.frequency.value = 2.17;
+      const freqDepth = audioContext.createGain();
+      freqDepth.gain.value = 120;
+      freqLfo.connect(freqDepth);
+      freqDepth.connect(osc.frequency);
+
+      // Быстрый меандр (трель ~4.3 Гц) модулирует громкость
+      const gate = audioContext.createGain();
+      gate.gain.value = 0.07;
+      const gateLfo = audioContext.createOscillator();
+      gateLfo.type = 'square';
+      gateLfo.frequency.value = 4.35;
+      const gateDepth = audioContext.createGain();
+      gateDepth.gain.value = 0.06;
+      gateLfo.connect(gateDepth);
+      gateDepth.connect(gate.gain);
+
+      const filter = audioContext.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.value = 1800;
-      gain.gain.value = 0;
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioContext.destination);
-      osc.start();
-      trillOsc = osc;
-      trillGain = gain;
 
-      let phase = false;
-      const pulse = () => {
-        if (!trillGain || !audioContext) return;
-        phase = !phase;
-        const now = audioContext.currentTime;
-        trillGain.gain.cancelScheduledValues(now);
-        trillGain.gain.setTargetAtTime(phase ? 0.13 : 0.008, now, 0.008);
-        if (trillOsc) trillOsc.frequency.setTargetAtTime(phase ? 920 : 680, now, 0.012);
-      };
-      pulse();
-      trillTimer = setInterval(pulse, 115);
+      osc.connect(filter);
+      filter.connect(gate);
+      gate.connect(audioContext.destination);
+
+      osc.start(); freqLfo.start(); gateLfo.start();
+      trillNodes.push(osc, freqLfo, gateLfo, freqDepth, gateDepth, filter, gate);
     } catch (err) {
       console.warn('Не удалось запустить звук PA:', err);
     }
