@@ -14,59 +14,79 @@ h1{margin:0 0 6px;font-size:24px}
 input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid #39414d;background:#0f1114;color:#fff;font-size:16px;text-align:center;letter-spacing:2px;outline:none}
 input:focus{border-color:#d5b957}
 .err{color:#ff6b6b;font-size:12px;min-height:16px;margin:8px 0 4px}
+.okmsg{color:#4ade80;font-size:12px;min-height:16px;margin:8px 0 4px}
 button{width:100%;padding:13px;border-radius:10px;border:none;background:#d5b957;color:#15161a;font-size:14.5px;font-weight:800;cursor:pointer;margin-top:8px}
 button.sec{background:#23272f;color:#e8eaee;font-weight:700;font-size:13px}
-.board{margin:14px 0 0;color:#8b93a0;font-size:12.5px;line-height:1.6;display:none}
-.board b{color:#d5b957}
+.devbox{display:none;margin-top:14px;background:#121418;border:1px solid #282c34;border-radius:10px;padding:10px;font-size:12px;color:#aeb5c0;line-height:1.5}
+.devbox .mono{font-family:Consolas,monospace;color:#d5b957;word-break:break-all;font-size:11px}
 </style>
 </head>
 <body>
 <div class="card">
   <h1>🔒 СГУ — закрытый доступ</h1>
-  <p class="sub">Введите ключ доступа. Нет ключа — подайте заявку:<br>её примет администратор и выдаст ключ.</p>
-  <input id="key" placeholder="SGU-XXXX-XXXX" autocomplete="off">
+  <p class="sub">Ключ выдаётся админом и работает только на одном устройстве.</p>
+  <input id="key" placeholder="Ключ доступа" autocomplete="off">
   <div class="err" id="err"></div>
+  <div class="okmsg" id="okm"></div>
   <button id="go">ВОЙТИ</button>
-  <button class="sec" id="apply">📨 ПОДАТЬ ЗАЯВКУ НА ДОСТУП</button>
-  <div class="board" id="board">Текст заявки скопирован — отправьте его админу в открывшемся Telegram.</div>
+  <button class="sec" id="apply">📨 ПОДАТЬ ЗАЯВКУ / ЗАКРЕПИТЬ УСТРОЙСТВО</button>
+  <div class="devbox" id="devbox">Ваш код устройства (пришлите админу — он закрепит за вами ключ):<br><span class="mono" id="devcode"></span></div>
   <p class="sub" style="margin:16px 0 0;font-size:11px">shama&amp;by grek</p>
 </div>
 <script>
-(() => {
-  let _enc = new TextEncoder();
+  const TG = 'xkmx77';
   async function sha256hex(s) {
-    const buf = await crypto.subtle.digest('SHA-256', _enc.encode(s));
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
     return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
   }
-  const TG = '@USERNAME';
-  const err = document.getElementById('err');
+  function deviceId() {
+    let d = localStorage.getItem('SGU_DEV');
+    if (!d) {
+      d = [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem('SGU_DEV', d);
+    }
+    return d;
+  }
+</script>
+<script>
+(() => {
+  const err = document.getElementById('err'), okm = document.getElementById('okm');
+  document.getElementById('devcode').innerText = deviceId();
+
+  document.getElementById('apply').addEventListener('click', () => {
+    const text = ['Заявка на доступ к СГУ (shama&by grek)', 'Имя:', 'Ключ (если есть): ' + document.getElementById('key').value.trim(), 'Код устройства: ' + deviceId()].join('\n');
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+    document.getElementById('devbox').style.display = 'block';
+    window.open('https://t.me/' + TG.replace('@', ''), '_blank');
+  });
 
   async function tryLogin() {
-    const k = document.getElementById('key').value.trim().toUpperCase();
+    const k = document.getElementById('key').value.trim();
     if (!k) return;
+    err.innerText = ''; okm.innerText = '';
     try {
       const data = await (await fetch('keys.json?r=' + Date.now())).json();
-      const h = await sha256hex(k);
-      const found = (data.keys || []).find(x => x.hash === h);
-      if (found) {
-        localStorage.setItem('SGU_ACCESS', h);
-        location.href = 'index.html';
+      const kh = await sha256hex(k);
+      const found = (data.keys || []).find(x => x.hash === kh);
+      if (!found) { err.innerText = 'Ключ не найден или отклонён.'; return; }
+      const dev = deviceId();
+      if (found.deviceHash) {
+        const expect = await sha256hex(dev + '|' + kh);
+        if (found.deviceHash !== expect) { err.innerText = 'Ключ уже используется на другом устройстве.'; return; }
       } else {
-        err.innerText = 'Ключ не найден или отклонён.';
+        okm.innerText = 'Устройство не закреплено — впустим, админ закрепит после заявки.';
+        document.getElementById('devbox').style.display = 'block';
       }
+      // Ключ запрашивается при каждом заходе: держим его только до закрытия вкладки
+      sessionStorage.setItem('SGU_ACCESS', kh);
+      sessionStorage.setItem('SGU_DEV', dev);
+      location.href = 'index.html';
     } catch (e) {
       err.innerText = 'Не удалось проверить ключ.';
     }
   }
   document.getElementById('go').addEventListener('click', tryLogin);
   document.getElementById('key').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
-  document.getElementById('apply').addEventListener('click', () => {
-    const text = ['Заявка на доступ к СГУ пультам (shama&by grek)', 'Имя:', 'Откуда:', 'Комментарий:'].join('\n');
-    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
-    document.getElementById('board').style.display = 'block';
-    window.open('https://t.me/' + TG.replace('@', ''), '_blank');
-  });
 })();
 </script>
 </body>
