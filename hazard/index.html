@@ -2,172 +2,124 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premier Hazard 7007</title>
 <style>
-/* Пульт 1 в 1 по скрину: вертикальный телефонный вид, панель сверху, две большие кнопки внизу */
-*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;font-family:'Segoe UI',Arial,sans-serif}
-html,body{margin:0;background:#0a0a0c;color:#e8e8ea}
-body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:10px 12px 18px}
-
-/* ---- Панель ---- */
-.stage{width:100%;max-width:400px;background:linear-gradient(180deg,#05050699,#0a0a0c00)}
-.panel{
-  position:relative;width:100%;aspect-ratio:340/430;
-  background:linear-gradient(165deg,#1c1e22 0%,#101216 55%,#0a0b0e 100%);
-  border-radius:14px;
-  box-shadow:0 22px 40px rgba(0,0,0,.85), inset 0 1px 1px rgba(255,255,255,.1), inset 0 -6px 12px rgba(0,0,0,.9);
-}
-.frame{position:absolute;inset:6px;border:1.5px solid #3a3d44;border-radius:10px;pointer-events:none}
-
-/* RJ45 слева сверху */
-.rj{position:absolute;top:22px;left:22px;width:62px;height:74px;background:#060708;border-radius:6px;border:1.5px solid #2c2f36;box-shadow:inset 0 4px 8px #000;display:flex;align-items:center;justify-content:center}
-.rj-inner{width:46px;height:34px;background:#0e0f11;border-radius:4px;position:relative}
-.rj-pins{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:30px;height:12px;background:repeating-linear-gradient(90deg,#b9a04a 0 3px,transparent 3px 6.4px)}
-
-/* Подпись OFF/VOL */
-.t-vol{position:absolute;top:26px;right:120px;color:#d8dade;font-size:12px;font-weight:700;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.5px}
-.t-vol i{position:absolute;top:2px;left:-9px;width:5px;height:5px;border-radius:50%;background:#cfd2d6}
-
-/* Ручка */
-.knob{
-  position:absolute;border-radius:50%;cursor:pointer;
-  background:radial-gradient(circle at 38% 32%, #202227 0%, #121317 55%, #060708 100%);
-  box-shadow:0 8px 16px rgba(0,0,0,.9), inset 0 1.5px 2px rgba(255,255,255,.14), inset 0 -6px 12px rgba(0,0,0,.85), 0 0 0 2px #232529;
-}
-.knob .slot{position:absolute;left:50%;top:9%;transform:translateX(-50%);width:9px;height:46%;border-radius:5px;background:linear-gradient(90deg,#000,#2e3138 55%,#0a0b0d)}
-.knob .dot{position:absolute;right:14%;top:46%;width:7px;height:7px;border-radius:50%;background:#f4f6f8;box-shadow:0 0 4px #000}
-.k-vol{top:26px;right:26px;width:74px;height:74px;transform:rotate(115deg)}
-.k-mode{top:52%;right:24px;width:96px;height:96px;transform:rotate(14deg)}
-.k-gear{position:absolute;inset:0;border-radius:50%;transition:transform .15s ease-out;will-change:transform}
-
-/* Надписи/бейдж на левой половине */
-.t-7007{position:absolute;top:118px;left:44px;color:#d8dade;font-size:15px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:1px}
-.badge{position:absolute;top:148px;left:76px;border:1.5px solid #3a3d44;border-radius:5px;padding:5px 6px;color:#d8dade;font-size:8.5px;font-weight:800;line-height:1.25;text-align:center;display:flex;flex-direction:column}
-.badge span{letter-spacing:.6px}
-
-/* Левый столбик: белые кнопки MAN/HORN + подписи */
-.wbtn{position:absolute;left:26px;width:44px;height:44px;border-radius:9px;border:none;cursor:pointer;background:linear-gradient(180deg,#f2f2ef,#cfcec8);box-shadow:0 3px 6px #000, inset 0 1.5px 2px #fff, inset 0 -2px 4px rgba(0,0,0,.3);transition:transform .05s}
-.wbtn:active{transform:translateY(2px)}
-.wbtn:disabled{opacity:.28;pointer-events:none}
-#btnAst{top:262px}
-#btnBild{top:346px}
-.t-lbl{position:absolute;color:#d8dade;font-size:12px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg)}
-.t-pa{top:246px;left:84px}
-.t-man{top:270px;left:96px}
-.t-horn{top:338px;left:84px}
-.t-radio{top:288px;left:110px}
-
-/* Правый столбик надписей режимов с точками */
-.m-marks{position:absolute;right:132px;top:150px;display:flex;flex-direction:column;gap:18px;align-items:flex-end}
-.m-mark{display:flex;align-items:center;gap:6px;color:#d8dade;font-size:11.5px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.8px}
-.m-mark i{width:5.5px;height:5.5px;border-radius:50%;background:#cfd2d6}
-.m-marks .m-mark:nth-child(1){transform:none;writing-mode:horizontal-tb}
-
-.m-pa{position:absolute;right:134px;top:322px;display:flex;flex-direction:column;align-items:flex-end;gap:16px}
-.m-pa .m-mark{writing-mode:vertical-rl;transform:rotate(180deg)}
-
-/* Ножки панели */
-.feet{display:flex;justify-content:center;gap:70px;margin-top:2px}
-.foot{width:64px;height:44px;background:#0d0e11;border-radius:0 0 8px 8px;box-shadow:0 8px 12px rgba(0,0,0,.7), inset 0 2px 3px rgba(255,255,255,.05)}
-
-/* ---- Большие кнопки ---- */
-.big-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:400px;margin-top:18px}
-.big{
-  padding:20px 10px;border:none;border-radius:12px;cursor:pointer;
-  background:#232529;color:#fff;font-size:19px;font-weight:800;letter-spacing:1.5px;
-  box-shadow:0 10px 22px rgba(0,0,0,.5), inset 0 1px 1px rgba(255,255,255,.08);
-  transition:transform .05s, box-shadow .05s, background .1s;
-}
-.big:active,.big.pressed{transform:translateY(3px);box-shadow:0 3px 8px rgba(0,0,0,.5);background:#2e3138}
-.stat{text-align:center;font-size:10px;font-weight:700;color:#555;margin-top:12px;letter-spacing:.4px;height:14px}
+  * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #141416; font-family: 'Arial Narrow', Arial, sans-serif; }
+  .unit { position: relative; display: flex; align-items: center; filter: drop-shadow(0 20px 30px #000); }
+  .ear { width: 38px; height: 112px; position: relative; z-index: 1; background: linear-gradient(180deg, #2b2b2e 0%, #19191b 55%, #101012 100%); border: 1px solid #353538; box-shadow: inset 0 2px 2px rgba(255,255,255,.12); }
+  .ear.l { border-radius: 12px 0 0 12px; margin-right: -4px; }
+  .ear.r { border-radius: 0 12px 12px 0; margin-left: -4px; }
+  .ear::after { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 24px; height: 18px; background: #141416; box-shadow: inset 0 2px 4px #000; }
+  .ear.l::after { left: -1px; border-radius: 0 9px 9px 0; border: 1px solid #333; border-left: none; }
+  .ear.r::after { right: -1px; border-radius: 9px 0 0 9px; border: 1px solid #333; border-right: none; }
+  .case { position: relative; z-index: 2; width: 356px; height: 274px; border-radius: 16px; padding: 13px; background: radial-gradient(circle at 25% 15%, rgba(255,255,255,.07), transparent 55%), linear-gradient(165deg, #27272a 0%, #161618 65%, #0d0d0f 100%); box-shadow: inset 0 2px 1.5px rgba(255,255,255,.18), inset 0 -4px 7px rgba(0,0,0,.95), 0 0 0 1.5px #09090a; }
+  .face { position: relative; width: 100%; height: 100%; border-radius: 8px; background: linear-gradient(180deg, #1d1d20 0%, #141416 100%); box-shadow: inset 0 2px 6px rgba(0,0,0,.9); }
+  .lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .t { position: absolute; color: #e8cf6b; font-weight: 800; letter-spacing: .3px; line-height: 1; text-shadow: 0 1px 1px #000; }
+  .d { position: absolute; width: 8.5px; height: 8.5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff5b8, #d8b84a 75%, #8c701e); box-shadow: 0 1px 2px #000; transition: all 0.1s; }
+  .d.active { background: #ff0000 !important; box-shadow: 0 0 12px #ff0000, inset 0 0 5px #ff8080 !important; }
+  .d-off { top: 96px; left: 26px; width: 7.5px; height: 7.5px; }
+  .t-off { top: 109px; left: 16px; font-size: 13px; }
+  .rj { position: absolute; bottom: 13px; left: 16px; width: 78px; height: 92px; background: #0a0a0c; border-radius: 6px; border: 2px solid #2a2a2e; box-shadow: inset 0 5px 10px #000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6px; }
+  .rj-top { width: 56px; height: 52px; background: #040405; border: 1px solid #222; border-radius: 3px; position: relative; }
+  .rj-pins { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 38px; height: 15px; background: repeating-linear-gradient(90deg, #cfa538 0 3px, transparent 3px 6.5px); }
+  .rj-red { width: 38px; height: 17px; border-radius: 2px 2px 4px 4px; position: relative; background: linear-gradient(180deg, #e02e2e, #9c1717); box-shadow: 0 2px 3px #000; }
+  .rj-red::before { content: ''; position: absolute; top: -4px; left: 8px; width: 22px; height: 5px; background: #be2020; border-radius: 2px 2px 0 0; }
+  .t-hilo { top: 17px; right: 120px; font-size: 12.5px; } .d-hilo { top: 18px; right: 106px; }
+  .t-yelp { top: 42px; right: 132px; font-size: 12.5px; } .d-yelp { top: 43px; right: 118px; }
+  .t-wail { top: 67px; right: 133px; font-size: 12.5px; } .d-wail { top: 68px; right: 119px; }
+  .t-stby { top: 92px; right: 124px; font-size: 12.5px; } .d-stby { top: 93px; right: 110px; }
+.badge { position: absolute; top: 122px; left: 103px; width: 78px; height: 32px; border: 2px solid #e2c65e; border-radius: 5px; color: #e8cf6b; font-weight: 800; font-size: 10.5px; line-height: 1.
+12; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .num { position: absolute; bottom: 20px; left: 112px; color: #e8cf6b; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+  .d-pa  { top: 109px; left: 236px; width: 7.5px; height: 7.5px; }
+  .d-rad { top: 112px; left: 264px; width: 7.5px; height: 7.5px; }
+  .t-pa  { top: 121px; left: 230px; font-size: 12px; }
+  .t-rad { top: 121px; left: 254px; font-size: 12px; }
+  .t-man  { top: 141px; left: 204px; font-size: 12px; }
+  .t-horn { top: 141px; left: 264px; font-size: 12px; }
+  .b-slot { position: absolute; bottom: 14px; width: 52px; height: 52px; background: #0a0a0c; border-radius: 8px; padding: 3.5px; box-shadow: inset 0 2px 5px #000, 0 1px 1px rgba(255,255,255,.1); }
+  .s-man  { left: 194px; }
+  .s-horn { left: 262px; }
+  .btn { width: 100%; height: 100%; border: none; border-radius: 6px; cursor: pointer; background: radial-gradient(circle at 35% 30%, #fafaf5, #dcdcd2 70%, #b5b5ab); box-shadow: 0 3px 6px #000, inset 0 2px 2px #fff, inset 0 -2px 3px rgba(0,0,0,.3); transition: transform .06s; }
+  .btn:active { transform: translateY(3px) scale(.96); box-shadow: 0 0px 2px #000, inset 0 2px 5px rgba(0,0,0,0.5); }
+  /* тумблер режима кнопки MAN: выкл = свой звук, вкл = сирена режима */
+  .mtoggle-wrap { position: absolute; top: 42px; left: 120px; }
+  .mtoggle { width: 26px; height: 40px; border-radius: 7px; cursor: pointer; background: linear-gradient(180deg, #0f1012, #060708); box-shadow: inset 0 2px 5px #000, 0 1px 1px rgba(255,255,255,.1); position: relative; }
+  .mtoggle .mcap { position: absolute; left: 3px; bottom: 3px; width: 20px; height: 17px; border-radius: 4px; transition: bottom .12s ease; background: linear-gradient(180deg, #f4f2e8, #c9c6b8); box-shadow: 0 2px 5px rgba(0,0,0,.7); }
+  .mtoggle.on .mcap { bottom: 20px; }
+  .knob { position: absolute; border-radius: 50%; cursor: pointer; box-shadow: 0 10px 18px rgba(0,0,0,.95), 0 3px 5px #000, 0 0 0 2px #09090a; }
+  .k-vol  { top: 16px; left: 25px; width: 72px; height: 72px; }
+  .k-mode { top: 10px; right: 16px; width: 96px; height: 96px; }
+  .k-gear { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#303034 0deg 6deg, #121214 6deg 12deg); transition: transform .15s ease-out; }
+  .k-top { width: 75%; height: 75%; border-radius: 50%; position: relative; background: radial-gradient(circle at 35% 30%, #36363a, #1e1e21 65%, #111113); box-shadow: inset 0 1.5px 2px rgba(255,255,255,.2), 0 2px 5px #000; }
+  .k-top::before { content: ''; position: absolute; top: 6%; bottom: 6%; left: 50%; transform: translateX(-50%); width: 10px; border-radius: 3px; background: linear-gradient(90deg, #222225, #323236 50%, #18181a); box-shadow: -2px 0 3px rgba(0,0,0,.6), 2px 0 3px rgba(0,0,0,.6); }
+  .k-top::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4.5px; height: 8px; background: #f5f5f7; border-radius: 1px; z-index: 2; }
+  .k-vol .k-top::after  { top: 3px; }
+  .k-mode .k-top::after { bottom: 4px; }
 </style>
-<script>
-(async () => {
-  async function check() {
-    const kh = sessionStorage.getItem('SGU_ACCESS');
-    if (!kh) { location.href = '../login.html'.replace('../', ''); return; }
-    try {
-      const data = await (await fetch('../keys.json?r=' + Date.now())).json();
-      const entry = (data.keys || []).find(x => x.hash === kh);
-      if (!entry) { location.href = '../login.html'; return; }
-      if (entry.deviceHash) {
-        const dev = sessionStorage.getItem('SGU_DEV') || localStorage.getItem('SGU_DEV');
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((dev || '') + '|' + kh));
-        const expect = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
-        if (expect !== entry.deviceHash) { sessionStorage.clear(); location.href = '../login.html'; return; }
-      }
-    } catch (e) {}
-  }
-  await check();
-})();
-</script>
 </head>
 <body>
 
-<div class="stage">
-  <div class="panel">
-    <div class="frame"></div>
-
-    <div class="rj"><div class="rj-inner"><div class="rj-pins"></div></div></div>
-
-    <div class="t-vol"><i></i>OFF/VOL</div>
-    <div class="knob k-vol" id="vol"><div class="slot"></div><div class="dot"></div></div>
-
-    <div class="t-7007">7007</div>
-    <div class="badge"><span>PREMIER</span><span>HAZARD</span></div>
-
-    <div class="t-lbl t-pa">PA</div>
-    <div class="t-lbl t-man">MAN</div>
-    <div class="t-lbl t-radio">RADIO</div>
-    <div class="t-lbl t-horn">HORN</div>
-
-    <button class="wbtn" id="btnAst" title="MAN"></button>
-    <button class="wbtn" id="btnBild" title="HORN"></button>
-
-    <div class="m-marks">
-      <div class="m-mark">HI<i></i></div>
-      <div class="m-mark"><i></i>YELP</div>
-      <div class="m-mark"><i></i>WAIL</div>
-      <div class="m-mark"><i></i>STANDBY</div>
-    </div>
-    <div class="m-pa">
-      <div class="m-mark">PA<i></i></div>
-      <div class="m-mark">RADIO<i></i></div>
-    </div>
-
-    <div class="knob k-mode" id="mode"><div class="slot"></div><div class="dot"></div></div>
-  </div>
-  <div class="feet"><div class="foot"></div><div class="foot"></div></div>
-</div>
-
-<div class="big-row">
-  <button class="big" id="btnMan">MAN</button>
-  <button class="big" id="btnHorn">HORN</button>
-</div>
-<div class="stat" id="disp-status"></div>
-
+<!-- Каждый звук — отдельный файл из этой же папки -->
 <audio id="snd-short" src="short.mp3" preload="auto"></audio>
-<audio id="snd-horn"  src="horn.wav"  preload="auto"></audio>
-<audio id="snd-wail"  src="wail.wav"  preload="auto"></audio>
+<audio id="snd-manual" src="manual.mp3" preload="auto"></audio>
+<audio id="snd-horn"  src="horn.mp3"  preload="auto"></audio>
+<audio id="snd-wail"  src="wail.mp3"  preload="auto"></audio>
 <audio id="snd-yelp"  src="yelp.mp3"  preload="auto"></audio>
-<audio id="snd-hilo"  src="hilo.wav"  preload="auto"></audio>
-<script>
+<audio id="snd-hilo"  src="hilo.mp3"   preload="auto"></audio>
+<audio id="snd-stby"  src="standby.mp3" preload="auto"></audio>
 
+
+<div class="unit">
+  <div class="ear l"></div>
+  <div class="case">
+    <div class="face">
+      <svg class="lines" viewBox="0 0 330 248" fill="none"><path d="M 8 6 H 322 V 242 H 254 V 168 H 186 V 242 H 8 Z" stroke="#e2c65e" stroke-width="2.6" stroke-linejoin="round"/></svg>
+      <div class="knob k-vol" id="vol"><div class="k-gear" style="transform:rotate(-15deg)"><div class="k-top"></div></div></div>
+      <div class="d d-off" id="led-off"></div>
+      <div class="t t-off">OFF/VOL</div>
+      <div class="rj"><div class="rj-top"><div class="rj-pins"></div></div><div class="rj-red"></div></div>
+      <div class="t t-hilo">HILO</div><div class="d d-hilo" id="led-hilo"></div>
+      <div class="t t-yelp">YELP</div><div class="d d-yelp" id="led-yelp"></div>
+      <div class="t t-wail">WAIL</div><div class="d d-wail" id="led-wail"></div>
+      <div class="t t-stby">STANDBY</div><div class="d d-stby" id="led-stby"></div>
+      <div class="badge"><span>PREMIER</span><span>HAZARD</span></div>
+<div class="num">7007</div>
+      <div class="knob k-mode" id="mode"><div class="k-gear" style="transform:rotate(14deg)"><div class="k-top"></div></div></div>
+      <div class="d d-pa" id="led-pa"></div><div class="d d-rad" id="led-rad"></div>
+      <div class="t t-pa">PA</div><div class="t t-rad">RADIO</div>
+      <div class="t t-man">MAN</div>
+<div class="b-slot s-man"><button class="btn" id="btnMan"></button></div>
+      <div class="mtoggle-wrap" id="manToggleWrap" title="MAN: свой звук / сирена">
+        <div class="mtoggle" id="manToggle"><div class="mcap"></div></div>
+      </div>
+      <div class="t t-horn">HORN</div>
+      <div class="b-slot s-horn"><button class="btn" id="btnHorn"></button></div>
+    </div>
+  </div>
+  <div class="ear r"></div>
+</div>
+
+<script>
 (() => {
   const $ = (id) => document.getElementById(id);
   const angles = [115, 90, 65, 40, 14, -14];
   const modeLeds = ['led-hilo', 'led-yelp', 'led-wail', 'led-stby', 'led-pa', 'led-rad'];
-  let modeIndex = 4; // PA ��� �������
+  let modeIndex = 4; // PA при запуске
   let powerOn = false;
   const sounds = {
     short: $('snd-short'),
+    manual: $('snd-manual'),
     horn: $('snd-horn'),
     wail: $('snd-wail'),
     yelp: $('snd-yelp'),
-    hilo: $('snd-hilo')
+    hilo: $('snd-hilo'),
+    stby: $('snd-stby')
   };
-  // ������ (wail/yelp/hilo) ������ ��������, ���� ������� �����
+  // Сирены (wail/yelp/hilo) звучат циклично, пока включён режим
   let sirenAudio = null;
 
   function stopSiren() {
@@ -180,13 +132,14 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;pad
 
   function startSiren() {
     stopSiren();
-    const s = sounds[['hilo', 'yelp', 'wail'][modeIndex]];
+    const key = { 0: 'hilo', 1: 'yelp', 2: 'wail', 3: 'stby' }[modeIndex];
+    const s = sounds[key];
     if (!s) return;
     s.loop = true;
     s.volume = 1;
     s.currentTime = 0;
     sirenAudio = s;
-    s.play().catch(err => console.warn('�� ������� ������� ������:', err));
+    s.play().catch(err => console.warn('Не удалось сыграть сирену:', err));
   }
 
   function playHold(name) {
@@ -195,7 +148,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;pad
     s.loop = true;
     s.volume = 1;
     s.currentTime = 0;
-    s.play().catch(err => console.warn('�� ������� ������� ' + name + ':', err));
+    s.play().catch(err => console.warn('Не удалось сыграть ' + name + ':', err));
   }
 
   function stopHold(name) {
@@ -263,248 +216,25 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;pad
       pulse();
       trillTimer = setInterval(pulse, 115);
     } catch (err) {
-      console.warn('�� ������� ��������� ���� PA:', err);
+      console.warn('Не удалось запустить звук PA:', err);
     }
-  }
-
-  // ===== PA: ����� �������� � �������� ������ =====
-  let micStream = null;
-  let micNodes = [];
-
-  function makeHornDistortion(amount) {
-    const n = 44100;
-    const curve = new Float32Array(n);
-    for (let i = 0; i < n; i++) {
-      const x = (i * 2) / n - 1;
-      curve[i] = ((3 + amount) * x * 20 * (Math.PI / 180)) / (Math.PI + amount * Math.abs(x));
-    }
-    return curve;
-  }
-
-  async function startPA() {
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no mic');
-      audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === 'suspended') await audioContext.resume();
-
-      micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false } });
-      const source = audioContext.createMediaStreamSource(micStream);
-
-      const hp = audioContext.createBiquadFilter();
-      hp.type = 'highpass'; hp.frequency.value = 460; hp.Q.value = 0.8;
-      const peak = audioContext.createBiquadFilter();
-      peak.type = 'peaking'; peak.frequency.value = 1350; peak.Q.value = 1.6; peak.gain.value = 11;
-      const lp = audioContext.createBiquadFilter();
-      lp.type = 'lowpass'; lp.frequency.value = 2900; lp.Q.value = 0.9;
-      const shaper = audioContext.createWaveShaper();
-      shaper.curve = makeHornDistortion(18);
-      shaper.oversample = '2x';
-      const g = audioContext.createGain();
-      g.gain.value = 2.2;
-      const delay = audioContext.createDelay();
-      delay.delayTime.value = 0.13;
-      const echo = audioContext.createGain();
-      echo.gain.value = 0.24;
-
-      source.connect(hp); hp.connect(peak); peak.connect(lp); lp.connect(shaper); shaper.connect(g);
-      g.connect(audioContext.destination);
-      g.connect(delay); delay.connect(echo); echo.connect(audioContext.destination);
-      micNodes = [source, hp, peak, lp, shaper, g, delay, echo];
-    } catch (err) {
-      // ��������� ��� � ��������� ��������������� ����� ��� �������� �������
-      startTrill();
-    }
-  }
-
-  function stopPA() {
-    micNodes.forEach(node => { try { node.disconnect(); } catch (e) {} });
-    micNodes = [];
-    if (micStream) {
-      micStream.getTracks().forEach(t => t.stop());
-      micStream = null;
-    }
-  }
-
-  // ===== RADIO: ��� ����� =====
-  let radioNodes = [];
-
-  function startRadio() {
-    stopRadio();
-    try {
-      audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === 'suspended') audioContext.resume();
-
-      // ����� ���
-      const len = audioContext.sampleRate * 2;
-      const buf = audioContext.createBuffer(1, len, audioContext.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-      const src = audioContext.createBufferSource();
-      src.buffer = buf;
-      src.loop = true;
-
-      const band = audioContext.createBiquadFilter();
-      band.type = 'bandpass';
-      band.frequency.value = 1600;
-      band.Q.value = 0.6;
-
-      const hiss = audioContext.createBiquadFilter();
-      hiss.type = 'highpass';
-      hiss.frequency.value = 900;
-
-      const g = audioContext.createGain();
-      g.gain.value = 0.07;
-
-      // ����������� tuning�: ��������� ��������� �������
-      const lfo = audioContext.createOscillator();
-      lfo.frequency.value = 0.17;
-      const lfoGain = audioContext.createGain();
-      lfoGain.gain.value = 700;
-      lfo.connect(lfoGain);
-      lfoGain.connect(band.frequency);
-
-      src.connect(hiss); hiss.connect(band); band.connect(g); g.connect(audioContext.destination);
-      src.start(); lfo.start();
-      radioNodes = [src, lfo, lfoGain, band, hiss, g];
-    } catch (err) {
-      console.warn('�� ������� ��������� ��� �����:', err);
-    }
-  }
-
-  function stopRadio() {
-    radioNodes.forEach(node => { try { node.stop && node.stop(); node.disconnect(); } catch (e) {} });
-    radioNodes = [];
-  }
-
-  // ===== HORN: ����������� ���� ��� ����� � Web Audio � �������� ������ � ������ =====
-  let hornCtx = null, hornBuffer = null, hornSrcNode = null, hornGainNode = null;
-
-  function hornTrimEnd(buf) {
-    const ch = buf.getChannelData(0);
-    let end = ch.length - 1;
-    for (let i = ch.length - 1; i > 0; i--) {
-      if (Math.abs(ch[i]) > 0.005) { end = i; break; }
-    }
-    return Math.min(buf.duration, end / buf.sampleRate + 0.01);
-  }
-
-  async function ensureHornBuffer() {
-    if (hornBuffer || hornCtx === false) return hornBuffer;
-    try {
-      hornCtx = hornCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (hornCtx.state === 'suspended') await hornCtx.resume();
-      const res = await fetch('horn.wav');
-      if (!res.ok) throw new Error('http ' + res.status);
-      const arr = await res.arrayBuffer();
-      hornBuffer = await hornCtx.decodeAudioData(arr);
-    } catch (e) {
-      hornCtx = false; // ���� ���������� � fallback �� <audio>
-    }
-    return hornBuffer;
-  }
-
-  async function startHornContinuous() {
-    const buf = await ensureHornBuffer();
-    if (buf && hornCtx) {
-      if (hornSrcNode) { try { hornSrcNode.stop(); hornSrcNode.disconnect(); } catch (e) {} hornSrcNode = null; }
-      hornGainNode = hornGainNode || hornCtx.createGain();
-      hornGainNode.gain.value = 1;
-      const src = hornCtx.createBufferSource();
-      src.buffer = buf;
-      src.loop = true;
-      try { src.loopEnd = hornTrimEnd(buf); } catch (e) {}
-      src.connect(hornGainNode);
-      hornGainNode.connect(hornCtx.destination);
-      src.start(0);
-      hornSrcNode = src;
-      return;
-    }
-    playHold('horn'); // �������� �������
-  }
-
-  function stopHornContinuous() {
-    if (hornSrcNode) {
-      try { hornSrcNode.stop(); hornSrcNode.disconnect(); } catch (e) {}
-      hornSrcNode = null;
-      return;
-    }
-    stopHold('horn');
-  }
-
-  // ===== MAN ��-���������� =====
-  // ����� � PA: MAN = ����� � �������� �������� ������ ���� ������.
-  // ����� � HILO/YELP/WAIL: MAN = ������ ��� � �������� = �����, ����� = ����������� � ���� �� �����.
-
-  let manAudio = null;      // ������ ������ ��� MAN
-  let manOffset = 0;        // ����� ����� � ������ ������
-  let manToneKey = null;    // ����� ��� ����� � ��������� ���
-  let manFadeTimer = null;
-
-  function fadeTo(s, target, ms, onDone) {
-    if (manFadeTimer) clearInterval(manFadeTimer);
-    const steps = 6;
-    const startVol = s.volume;
-    let i = 0;
-    manFadeTimer = setInterval(() => {
-      i++;
-      s.volume = Math.min(1, Math.max(0, startVol + (target - startVol) * (i / steps)));
-      if (i >= steps) {
-        clearInterval(manFadeTimer);
-        manFadeTimer = null;
-        if (onDone) onDone();
-      }
-    }, ms / steps);
-  }
-
-  function startMan() {
-    if (!powerOn) return;
-    stopTrill(); stopSiren(); stopRadio();
-
-    // ����� � PA > ������ MAN = �������� � �����
-    if (modeIndex === 4) { startPA(); return; }
-
-    // ������ ���; � PA/RADIO/STANDBY � WAIL
-    const toneKey = [0, 1, 2].includes(modeIndex) ? ['hilo', 'yelp', 'wail'][modeIndex] : 'wail';
-    const s = sounds[toneKey];
-    if (!s) return;
-
-    // ����� ���� � ���������� �����
-    if (manToneKey !== toneKey) { manOffset = 0; manToneKey = toneKey; }
-
-    if (manAudio && manAudio !== s) {
-      try { manAudio.pause(); } catch (e) {}
-    }
-    s.loop = true;
-    s.volume = 0;
-    s.currentTime = (s.duration > 0) ? (manOffset % s.duration) : 0;
-    manAudio = s;
-    s.play().catch(err => console.warn('�� ������� ������� MAN:', err));
-    fadeTo(s, 1, 120); // ������� ����������
-  }
-
-  function stopMan() {
-    // �������� ����� ������, ���� �� ��� ������� ��� MAN
-    stopPA();
-    const s = manAudio;
-    if (!s) return;
-    manAudio = null;
-    // ���������� ����� ����� � �����
-    if (s.duration > 0 && isFinite(s.currentTime)) manOffset = s.currentTime;
-    fadeTo(s, 0, 150, () => {
-      s.pause();
-      s.volume = 1;
-    });
   }
 
   function updateMode() {
     modeLeds.forEach((id, i) => $(id)?.classList.toggle('active', i === modeIndex));
     const gear = document.querySelector('#mode .k-gear');
     if (gear) gear.style.transform = `rotate(${angles[modeIndex]}deg)`;
-    stopTrill(); stopSiren(); stopPA(); stopRadio();
+    stopTrill();
+    stopSiren();
     if (!powerOn) return;
-    // PA � ����� ���������: �� ���������� ������ ���������� MAN. STANDBY � ������.
-    if (modeIndex === 0 || modeIndex === 1 || modeIndex === 2) startSiren();
-    manOffset = 0; // ����� ������ � ����� ������� ���� ������������
+    // При включённом тумблере MAN сирена сама не играет — только по кнопке MAN.
+    if (manSirenMode) return;
+    // В положении PA звучит электронная отсечка/трель.
+    if (modeIndex === 4) startTrill();
+    else if (modeIndex === 0) startSiren();
+    else if (modeIndex === 1) startSiren();
+    else if (modeIndex === 2) startSiren();
+    else if (modeIndex === 3) startSiren(); // STANDBY — свой звук standby.mp3
   }
 
   $('mode').addEventListener('pointerdown', (event) => {
@@ -522,85 +252,75 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;pad
     if (gear) gear.style.transform = `rotate(${powerOn ? 65 : -15}deg)`;
     vibrate();
     if (powerOn) updateMode();
-    else { stopTrill(); stopSiren(); stopPA(); stopRadio(); stopHold('short'); stopHold('horn'); stopMan(); }
+    else { stopTrill(); stopSiren(); stopHold('short'); stopHold('horn'); }
   });
 
-  // �������� ��������� ������ � ��� � ������ �����: pointer capture,
-  // ��������� ������ �� ������, ������� ������� � ���������� ���������.
-  const activePointers = { man: null, horn: null };
-
-  function bindMultitouchHold(id, channel, onDown, onUp) {
-    const btn = $(id);
-
-    btn.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (activePointers[channel] !== null) return;
-      activePointers[channel] = e.pointerId;
-      if (btn.setPointerCapture) {
-        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+  // Кнопки сохраняют штатную механику нажатия и индикации.
+  // MAN: тумблер manToggle.
+  //  выкл — «наша технология»: зажал — играет manual.mp3, отпустил — стоп; сирена выбранного режима играет сама.
+  //  вкл — сирена сама НЕ играет: пока держишь MAN — играет выбранный режим с места паузы, отпустил — пауза.
+  let manSirenMode = false;   // состояние тумблера
+  $('manToggle').addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    manSirenMode = !manSirenMode;
+    $('manToggle').classList.toggle('on', manSirenMode);
+    vibrate();
+    if (manSirenMode) stopSiren();       // сирена больше не звучит сама
+    else if (powerOn) updateMode();      // вернули обычное поведение
+  });
+  $('btnMan').addEventListener('pointerdown', () => {
+    if (!powerOn) return;
+    if (manSirenMode) {
+      // нажал — сирена продолжила с места паузы (или стартовала с начала)
+      if (sirenAudio) {
+        if (sirenAudio.paused) sirenAudio.play().catch(() => {});
+      } else {
+        const s = sounds[{ 0: 'hilo', 1: 'yelp', 2: 'wail', 3: 'stby' }[modeIndex]];
+        if (s && modeIndex <= 3) {
+          s.loop = true; s.volume = 1;
+          sirenAudio = s;
+          s.play().catch(() => {});
+        }
       }
-      onDown();
-    });
-
-    const releaseHandler = (e) => {
-      if (activePointers[channel] !== e.pointerId) return;
-      e.preventDefault();
-      e.stopPropagation();
-      activePointers[channel] = null;
-      onUp();
-    };
-
-    btn.addEventListener('pointerup', releaseHandler);
-    btn.addEventListener('pointercancel', releaseHandler);
-  }
-
-  bindMultitouchHold('btnMan', 'man', () => {
-    if (!powerOn) { activePointers.man = null; return; }
-    startMan();
-    vibrate(50);
-  }, () => {
+      vibrate(40);
+    } else {
+      $('led-pa')?.classList.add('active');
+      playHold('manual');
+      vibrate(50);
+    }
+  });
+  const releaseMan = () => {
     $('led-pa')?.classList.toggle('active', powerOn && modeIndex === 4);
-    stopMan();
-  });
+    if (manSirenMode) {
+      // отпустил — пауза, позиция сохраняется
+      if (sirenAudio && !sirenAudio.paused) sirenAudio.pause();
+    } else {
+      stopHold('manual');
+    }
+  };
+  $('btnMan').addEventListener('pointerup', releaseMan);
+  $('btnMan').addEventListener('pointercancel', releaseMan);
+  $('btnMan').addEventListener('pointerleave', releaseMan);
 
-  bindMultitouchHold('btnHorn', 'horn', () => {
-    if (!powerOn) { activePointers.horn = null; return; }
+  $('btnHorn').addEventListener('pointerdown', () => {
+    if (!powerOn) return;
     $('led-rad')?.classList.add('active');
-    startHornContinuous();
+    playHold('horn');
     vibrate(100);
-  }, () => {
+  });
+  const releaseHorn = () => {
     $('led-rad')?.classList.toggle('active', powerOn && modeIndex === 5);
-    stopHornContinuous();
-  });
+    stopHold('horn');
+  };
+  $('btnHorn').addEventListener('pointerup', releaseHorn);
+  $('btnHorn').addEventListener('pointercancel', releaseHorn);
+  $('btnHorn').addEventListener('pointerleave', releaseHorn);
 
-  // ������ ������ ���� � �� �������, ��� � �����
-  window.addEventListener('blur', () => {
-    activePointers.man = null; activePointers.horn = null;
-    stopMan(); stopHold('horn'); stopTrill(); stopSiren(); stopPA(); stopRadio();
-  });
-
-  // �������������� ��������� ����� � �����������.
+  // Первоначальное положение ручек и индикаторов.
   const volGear = document.querySelector('#vol .k-gear');
   if (volGear) volGear.style.transform = 'rotate(-15deg)';
   updateMode();
 })();
-
-// Р‘РµР»С‹Рµ РєР»Р°РІРёС€Рё РЅР° РїР°РЅРµР»Рё РґСѓР±Р»РёСЂСѓСЋС‚ Р±РѕР»СЊС€РёРµ РєРЅРѕРїРєРё MAN/HORN
-document.getElementById('btnAst').addEventListener('pointerdown', () => {
-  if (!powerOn) return;
-  startMan(); vibrate(50);
-}, { passive: false });
-['pointerup','pointercancel','pointerleave'].forEach(ev => {
-  document.getElementById('btnAst').addEventListener(ev, () => stopMan());
-});
-document.getElementById('btnBild').addEventListener('pointerdown', () => {
-  if (!powerOn) return;
-  startHornContinuous(); vibrate(100);
-}, { passive: false });
-['pointerup','pointercancel','pointerleave'].forEach(ev => {
-  document.getElementById('btnBild').addEventListener(ev, () => stopHornContinuous());
-});
 </script>
 </body>
 </html>
