@@ -220,7 +220,12 @@ input:focus{border-color:#f5c842}
       showStatus('sent', { name, tg });
       setTimeout(() => showStatus('pending', { name, tg, time: fmtTime(Date.now() / 1000) }), 1200);
     } catch (e) {
-      err.textContent = 'Не удалось отправить. Попробуй ещё раз или напиши админу в Telegram: @' + TG;
+      err.innerHTML = 'Прямая отправка не прошла (сервис заблокирован у провайдера).<br><a id="tgFallback" style="color:#f5c842;font-weight:800;cursor:pointer;text-decoration:underline">ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM →</a>';
+      const a = document.getElementById('tgFallback');
+      if (a) a.addEventListener('click', () => {
+        const text = ['Заявка на вступление в клуб СГУ', 'Позывной: ' + name, 'Telegram: ' + (tg || '—'), 'Код устройства: ' + dev].join('\n');
+        window.open('https://t.me/' + TG + '?text=' + encodeURIComponent(text), '_blank');
+      });
     }
   });
 
