@@ -7,8 +7,11 @@
     },
     {
       "name": "Шамиль",
-      "hash": "48e8898d5214036ae7d890268473649bb7b6cca30613d9aede3b372f8f05164d",
-      "deviceHash": "f809a614e75d913997d554ce718cb5f59ababbe528aee765a122ba4edb6ec69f"
+      "hash": "48e8898d5214036ae7d890268473649bb7b6cca30613d9aede3b372f8f05164d"
+    },
+    {
+      "name": "герчик",
+      "hash": "85463463cfdb3ac12d18d5c40f3bdf996ffaef7489f41de3a54c6c9e6fae781b"
     }
   ]
 }
