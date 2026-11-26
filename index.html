@@ -2,81 +2,496 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101216">
-<title>Выбор СГУ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>СГУ by grek</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:#101216;color:#f4f5f7}
-body{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:22px}
-#menu{width:min(680px,100%);text-align:center}
-h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px}
-.sub{color:#aeb5c0;margin:0 0 28px}
-.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.choice{min-height:150px;border:1px solid #39414d;border-radius:16px;background:linear-gradient(145deg,#252b34,#171b22);color:white;padding:22px 14px;cursor:pointer;box-shadow:0 12px 30px #0008;transition:.15s}
-.choice:hover{transform:translateY(-3px);border-color:#d5b957}
-.choice strong{display:block;font-size:clamp(17px,3vw,23px);margin-bottom:9px}
-.choice span{font-size:13px;color:#b8c0ca}
-    .choice .credit{display:block;margin-top:6px;font-size:11px;color:#d5b957}
-    .choice .credit{display:block;margin-top:6px;font-size:11px;color:#d5b957;text-transform:none}
-#app{display:none;position:fixed;inset:0;background:#0f1114}
-#app iframe{border:0;width:100%;height:100%;display:block}
-#back{position:fixed;z-index:10;top:12px;left:12px;border:1px solid #555d69;border-radius:9px;background:#171b22eF;color:#fff;padding:10px 14px;font-weight:700;cursor:pointer}
-@media(max-width:520px){.choices{grid-template-columns:1fr}.choice{min-height:115px}}
+*{box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100dvh;background:#0b0c0e;color:#f4f5f7}
+body{display:flex;flex-direction:column;align-items:center;padding:28px 16px 48px;position:relative;overflow-x:hidden}
+.wm{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.wm span{position:absolute;color:rgba(255,255,255,.035);font-size:15px;font-weight:800;transform:rotate(-24deg);white-space:nowrap}
+.wrap{position:relative;z-index:1;width:min(640px,100%)}
+.top{text-align:left;margin:6px 4px 26px}
+.top h1{margin:0;font-size:34px;line-height:1.05;font-weight:900;letter-spacing:.5px}
+.top h1 .y{color:#f5c842}
+.top .club{letter-spacing:2.5px;font-weight:800;font-size:12px;color:#9aa1ac;margin-top:8px}
+.top p{color:#c7cdd6;font-size:14px;line-height:1.65;margin:14px 0 0;max-width:560px}
+.card{background:#15171b;border:1px solid #2c313a;border-radius:18px;padding:24px 22px;box-shadow:0 18px 50px #000a;position:relative;overflow:hidden;margin-bottom:18px}
+.card.striped::before{content:'';position:absolute;top:0;left:0;right:0;height:7px;background:repeating-linear-gradient(-45deg,#f5c842 0 14px,#15171b 14px 28px);opacity:.85}
+.ctitle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:2.5px;color:#f5c842;margin:8px 0 18px}
+label{display:block;font-size:11.5px;font-weight:800;letter-spacing:1.8px;color:#9aa1ac;margin:14px 0 7px}
+input,textarea{width:100%;padding:14px 15px;border-radius:11px;border:1px solid #333945;background:#0e1013;color:#fff;font-size:15.5px;outline:none}
+input::placeholder,textarea::placeholder{color:#5b626e}
+input:focus,textarea:focus{border-color:#f5c842}
+.hint{color:#8b93a0;font-size:12px;margin:10px 2px 0;line-height:1.5}
+.btn{width:100%;margin-top:20px;padding:16px;border-radius:13px;border:none;background:linear-gradient(180deg,#f7d45c,#e9b93a);color:#1a1505;font-size:15px;font-weight:900;letter-spacing:1.2px;cursor:pointer;box-shadow:0 6px 18px rgba(233,185,58,.25)}
+.btn:active{transform:translateY(1px)}
+.btn.dark{background:#1d2026;color:#e8eaee;box-shadow:none;border:1px solid #333945}
+.btn.small{width:auto;margin:0;padding:14px 18px;font-size:13px}
+.green{background:linear-gradient(180deg,#2ea36d,#1f7f52);color:#eafff4;box-shadow:0 6px 18px rgba(46,163,109,.25)}
+.red{background:#2a1417;color:#ff8080;border:1px solid #57262b;box-shadow:none}
+.err{color:#ff6b6b;font-size:12.5px;margin-top:10px;line-height:1.6}
+.err a{color:#f5c842;font-weight:800;cursor:pointer;text-decoration:underline}
+.mini{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font-size:12.5px;color:#8b93a0;gap:10px}
+.mini a{color:#cfd4dc;font-weight:800;letter-spacing:1.5px;cursor:pointer;white-space:nowrap}
+.sttable{margin-top:16px;border:1px solid #2a2f38;border-radius:12px;overflow:hidden}
+.strow{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid #23272f;font-size:13.5px}
+.strow:last-child{border-bottom:none}
+.strow .k{color:#9aa1ac;font-weight:700;letter-spacing:1px;font-size:11.5px;white-space:nowrap}
+.strow .v{font-weight:700;text-align:right;word-break:break-word}
+.redc{color:#ef5350}.greenc{color:#39d98a}.yelc{color:#f5c842}
+.hidden{display:none!important}
+.foot{text-align:center;color:#5b626e;font-size:11.5px;margin-top:34px;letter-spacing:1px}
+.foot a{color:#5b626e;cursor:pointer}
+/* меню */
+.menu{display:flex;flex-direction:column;gap:14px}
+.pult{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#15171b;border:1px solid #2c313a;border-radius:16px;padding:18px 20px;text-decoration:none;color:#f4f5f7;font-weight:900;font-size:17px;letter-spacing:.5px;transition:border-color .15s}
+.pult:hover{border-color:#f5c842}
+.pult .arr{color:#f5c842;font-size:20px}
+.pult small{display:block;font-weight:700;font-size:11px;color:#8b93a0;letter-spacing:1.5px;margin-top:4px}
+/* админка */
+.arow{display:flex;flex-direction:column;gap:7px;background:#121418;border:1px solid #282c34;border-radius:9px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.arow .r1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.arow .r2{display:flex;gap:6px;flex-wrap:wrap}
+.arow input{margin:0;padding:9px 10px;font-size:12.5px}
+.mono{font-family:Consolas,monospace;color:#f5c842;font-size:11.5px;word-break:break-all}
+.bound{color:#39d98a;font-size:11px}.unbound{color:#fbbf24;font-size:11px}
+#save{position:fixed;right:14px;bottom:14px;font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;background:#23272f;color:#aeb5c0;z-index:9}
+#save.ok{color:#39d98a}#save.err{color:#ff6b6b}#save.busy{color:#fbbf24}
 </style>
+</head>
+<body>
+<div class="wm" id="wm"></div>
+<div id="save"></div>
+<div class="wrap">
+
+  <!-- ============ ЭКРАН КЛУБА (вход/заявка) ============ -->
+  <div id="club">
+    <div class="top">
+      <h1>СГУ <span class="y">by grek</span></h1>
+      <div class="club">ЗАКРЫТЫЙ КЛУБ</div>
+      <p>Внутри — пульты сирен. Вход только по заявке: подай её, админ проверит и пустит. Кодов и обходных путей нет.</p>
+    </div>
+
+    <div class="card striped" id="formCard">
+      <div class="ctitle">📋 ЗАЯВКА НА ВСТУПЛЕНИЕ</div>
+      <label>ПОЗЫВНОЙ</label>
+      <input id="name" placeholder="Как тебя звать" maxlength="40">
+      <label>TELEGRAM (ПО ЖЕЛАНИЮ)</label>
+      <input id="tg" placeholder="@nickname" maxlength="40">
+      <div class="hint">Оставь ник — админу проще тебя найти и быстрее одобрить.</div>
+      <div class="err" id="err"></div>
+      <button class="btn" id="send">✈ ПОДАТЬ ЗАЯВКУ</button>
+      <div class="mini"><span>Уже подавали заявку на этом устройстве?</span><a id="check">ПРОВЕРИТЬ</a></div>
+
+      <div class="hidden" id="keyBlock">
+        <label>ЕСТЬ КЛЮЧ ОТ АДМИНА?</label>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <input id="key" placeholder="Ключ доступа" autocomplete="off" style="letter-spacing:2px;text-align:center">
+          <button class="btn dark small" id="go" style="margin:0">ВОЙТИ</button>
+        </div>
+        <div class="hint" id="kok" style="color:#39d98a"></div>
+      </div>
+      <div class="mini" style="margin-top:14px"><span>Есть ключ от админа?</span><a id="keyToggle">ВВЕСТИ КЛЮЧ</a></div>
+    </div>
+
+    <div class="card striped hidden" id="stcard">
+      <div class="ctitle" style="color:#f4f5f7"><span id="sticon">🛡</span><span class="dot" id="stdot" style="width:9px;height:9px;border-radius:50%;background:#f5c842;display:inline-block"></span><span id="sttitle" style="font-size:17px">ЗАЯВКА ОТПРАВЛЕНА</span></div>
+      <div class="hint" id="stsub" style="margin-top:0"></div>
+      <div class="sttable" id="sttable"></div>
+      <button class="btn dark hidden" id="enter">ВОЙТИ НА САЙТ</button>
+      <button class="btn dark hidden" id="again" style="margin-top:12px">ПОДАТЬ ЗАЯВКУ ЗАНОВО</button>
+      <div class="mini" style="margin-top:14px"><span></span><a id="reset">СМЕНИТЬ УСТРОЙСТВО / СБРОСИТЬ</a></div>
+    </div>
+  </div>
+
+  <!-- ============ МЕНЮ ПУЛЬТОВ ============ -->
+  <div id="menu" class="hidden">
+    <div class="top">
+      <h1>СГУ <span class="y">by grek</span></h1>
+      <div class="club">ВЫБОР ПУЛЬТА</div>
+    </div>
+    <div class="menu">
+      <a class="pult" href="gibdd/index.html"><span><small>ПУЛЬТ 1</small>СГУ ГИБДД по ЧР</span><span class="arr">›</span></a>
+      <a class="pult" href="hazard/index.html"><span><small>ПУЛЬТ 2</small>Premier Hazard 7007</span><span class="arr">›</span></a>
+      <a class="pult" href="k13/index.html"><span><small>ПУЛЬТ 3</small>СГУ К-13</span><span class="arr">›</span></a>
+    </div>
+    <div class="foot">shama&amp;by grek</div>
+  </div>
+
+  <!-- ============ АДМИНКА ============ -->
+  <div id="admin" class="hidden">
+    <div class="top">
+      <h1>🔐 <span class="y">АДМИНКА</span></h1>
+    </div>
+
+    <div class="card" id="admAuth">
+      <div class="ctitle" style="color:#f4f5f7">ВХОД В АДМИНКУ</div>
+      <input id="pin" placeholder="Master-ключ или пин" autocomplete="off">
+      <div class="err" id="admerr"></div>
+      <button class="btn" id="admGo">ВОЙТИ</button>
+      <button class="btn dark" id="admTokBtn" style="margin-top:12px">🔑 ТОКЕН ДЛЯ АВТОСОХРАНЕНИЯ</button>
+      <input id="tok" class="hidden" placeholder="ghp_... (сохранится только в вашем браузере)" style="margin-top:10px">
+      <div class="mini"><span></span><a id="admClose">ЗАКРЫТЬ АДМИНКУ</a></div>
+    </div>
+
+    <div id="admPanel" class="hidden">
+      <div class="card">
+        <div class="ctitle" style="margin-top:0">📨 ЗАЯВКИ НА ВСТУПЛЕНИЕ</div>
+        <div class="hint" id="appsStatus">Подключение к очереди заявок…</div>
+        <div id="appsList" style="margin-top:10px"></div>
+        <div class="ctitle" style="color:#9aa1ac;margin-top:22px;font-size:11px">＋ ДОБАВИТЬ ЗАЯВКУ ВРУЧНУЮ (если человек прислал код в Telegram)</div>
+        <input id="mName" placeholder="Позывной" style="margin-bottom:8px">
+        <input id="mTg" placeholder="@telegram (необязательно)" style="margin-bottom:8px">
+        <input id="mDev" placeholder="Код устройства из его заявки">
+        <button class="btn" id="mOk">✓ ПУСТИТЬ ЭТО УСТРОЙСТВО</button>
+      </div>
+
+      <div class="card">
+        <div class="ctitle" style="margin-top:0">🔑 ВЫДАТЬ КЛЮЧ</div>
+        <input id="who" placeholder="Имя человека" style="margin-bottom:8px">
+        <input id="customKey" placeholder="Ключ: пусто = автогенерация" style="margin-bottom:8px">
+        <button class="btn" id="gen">＋ ВЫДАТЬ КЛЮЧ</button>
+        <div class="hint" id="newkey" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card">
+        <div class="ctitle" style="margin-top:0">🗝 КЛЮЧИ И УСТРОЙСТВА</div>
+        <div id="list"></div>
+      </div>
+
+      <div class="mini" style="justify-content:center"><a id="admExit">ВЫЙТИ ИЗ АДМИНКИ</a></div>
+    </div>
+  </div>
+
+  <div class="foot" id="footClub">shama&amp;by grek · <a id="admLink">админка</a></div>
+</div>
+
 <script>
-(async () => {
-  async function check() {
+  const TG = 'xkmx77';
+  const NTFY_TOPIC = 'sgu-z7k-club-xkmx77-91fa';
+  const REPO = 'georgijkaribov5-arch/sgu-panels';
+  const PIN_HASH = '24dde9d92c98fe4328b6da3674a813d5ba8c7c8a919334dc9637cfa533e307da'; // вход по пину
+  async function sha256hex(s) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+  function deviceId() {
+    let d = localStorage.getItem('SGU_DEV');
+    if (!d) {
+      d = [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem('SGU_DEV', d);
+    }
+    return d;
+  }
+  function fmtTime(ts) {
+    const d = new Date(ts * 1000);
+    const p = n => String(n).padStart(2, '0');
+    return p(d.getDate()) + '.' + p(d.getMonth() + 1) + ', ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function saveDev() { sessionStorage.setItem('SGU_DEV', deviceId()); }
+</script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement('span');
+    s.textContent = '@' + TG;
+    s.style.left = (Math.random() * 100) + '%';
+    s.style.top = (Math.random() * 100) + '%';
+    $('wm').appendChild(s);
+  }
+  function setStatus(text, cls) {
+    const el = $('save');
+    el.innerText = text; el.className = cls || '';
+    if (text) setTimeout(() => { if (el.innerText === text) { el.innerText = ''; el.className = ''; } }, 5000);
+  }
+
+  /* ---------- доступ ---------- */
+  async function tryOpenMenu() {
     const kh = sessionStorage.getItem('SGU_ACCESS');
-    if (!kh) { location.href = '../login.html'.replace('../', ''); return; }
+    if (!kh) return false;
     try {
       const data = await (await fetch('keys.json?r=' + Date.now())).json();
       const entry = (data.keys || []).find(x => x.hash === kh);
-      if (!entry) { location.href = 'login.html'; return; }
+      if (!entry) { sessionStorage.clear(); return false; }
       if (entry.deviceHash) {
-        const dev = sessionStorage.getItem('SGU_DEV') || localStorage.getItem('SGU_DEV');
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((dev || '') + '|' + kh));
-        const expect = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
-        if (expect !== entry.deviceHash) { sessionStorage.clear(); location.href = 'login.html'; return; }
+        const dev = sessionStorage.getItem('SGU_DEV') || deviceId();
+        if (await sha256hex(dev + '|' + kh) !== entry.deviceHash) { sessionStorage.clear(); return false; }
+      }
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ---------- заявки: статус ---------- */
+  function showStatus(state, app) {
+    $('formCard').classList.toggle('hidden', state === 'approved');
+    const c = $('stcard');
+    c.classList.remove('hidden');
+    $('enter').classList.add('hidden'); $('again').classList.add('hidden');
+    const rows = pairs => pairs.map(([k, v, cls]) =>
+      `<div class="strow"><span class="k">${k}</span><span class="v ${cls || ''}">${v}</span></div>`).join('');
+    if (state === 'approved') {
+      $('sticon').textContent = '🛡'; $('stdot').style.background = '#39d98a';
+      $('sttitle').innerHTML = '<span class="greenc">ДОСТУП ОТКРЫТ</span>';
+      $('stsub').textContent = 'Админ одобрил заявку с этого устройства. Добро пожаловать в клуб.';
+      $('sttable').innerHTML = rows(app ? [['ПОЗЫВНОЙ', app.name || '—'], ['TELEGRAM', app.tg || '—', 'greenc']] : []);
+      $('enter').classList.remove('hidden');
+    } else if (state === 'rejected') {
+      $('sticon').textContent = '🛡'; $('stdot').style.background = '#ef5350';
+      $('sttitle').innerHTML = '<span class="redc">● ДОСТУП ЗАКРЫТ</span>';
+      $('stsub').textContent = 'Админ отклонил заявку с этого устройства.';
+      $('sttable').innerHTML = rows([
+        ['ПОЗЫВНОЙ', app.name || '—'], ['TELEGRAM', app.tg || '—'], ['ЗАЯВКА', app.time || '—'],
+        ['СТАТУС', 'ОТКЛОНЕНО', 'redc'], ['КОММЕНТАРИЙ', app.comment || '—']]);
+      $('again').classList.remove('hidden');
+    } else if (state === 'pending' || state === 'sent') {
+      $('sticon').textContent = '📋'; $('stdot').style.background = '#f5c842';
+      $('sttitle').textContent = state === 'sent' ? 'ЗАЯВКА ОТПРАВЛЕНА' : 'ЗАЯВКА ЖДЁТ ПРОВЕРКИ';
+      $('stsub').textContent = state === 'sent' ? 'Передали админу — скоро проверит.' : 'Админ ещё не рассмотрел заявку с этого устройства.';
+      $('sttable').innerHTML = rows(app ? [['ПОЗЫВНОЙ', app.name || '—'], ['TELEGRAM', app.tg || '—'], ['ЗАЯВКА', app.time || '—'], ['СТАТУС', 'ЖДЁТ', 'yelc']] : []);
+    } else {
+      $('sticon').textContent = '🛡'; $('stdot').style.background = '#8b93a0';
+      $('sttitle').textContent = 'ЗАЯВОК НЕ НАЙДЕНО';
+      $('stsub').textContent = 'С этого устройства ещё не подавали заявку.';
+      $('sttable').innerHTML = '';
+    }
+    c.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function checkStatus() {
+    const dev = deviceId();
+    const devHash = await sha256hex('DEV|' + dev);
+    try {
+      const data = await (await fetch('keys.json?r=' + Date.now())).json();
+      const approved = (data.keys || []).find(x => x.hash === devHash);
+      if (approved) { showStatus('approved', { name: approved.name, tg: approved.tg }); return; }
+      const rej = (data.rejected || []).find(x => x.dev === dev);
+      if (rej) { showStatus('rejected', rej); return; }
+    } catch (e) {}
+    try {
+      const msgs = await (await fetch('https://ntfy.sh/' + NTFY_TOPIC + '/json?poll=1')).json();
+      const mine = (msgs || []).filter(m => m.event === 'message' && m.message && m.message.includes('"dev":"' + dev + '"'));
+      if (mine.length) {
+        const m = mine[mine.length - 1]; const a = JSON.parse(m.message);
+        showStatus('pending', { name: a.name, tg: a.tg, time: fmtTime(m.time) });
+        return;
       }
     } catch (e) {}
+    showStatus('none');
   }
-  await check();
+
+  $('send').addEventListener('click', async () => {
+    const name = $('name').value.trim();
+    const tg = $('tg').value.trim();
+    if (!name) { $('err').textContent = 'Напиши позывной — без него заявку не принять.'; return; }
+    $('err').textContent = '';
+    const dev = deviceId();
+    try {
+      const res = await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+        method: 'POST',
+        headers: { 'Title': 'Новая заявка: ' + name, 'Tags': 'mailbox', 'Priority': 'high' },
+        body: JSON.stringify({ name, tg: tg || null, dev, ua: navigator.userAgent.slice(0, 120) })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      showStatus('sent', { name, tg });
+      setTimeout(() => showStatus('pending', { name, tg, time: fmtTime(Date.now() / 1000) }), 1500);
+    } catch (e) {
+      $('err').innerHTML = 'Автоотправка не прошла у вашего провайдера.<br><a id="tgF">ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM →</a> (откроется готовый текст)';
+      const a = $('tgF');
+      if (a) a.addEventListener('click', () => {
+        const text = ['Заявка на вступление в клуб СГУ', 'Позывной: ' + name, 'Telegram: ' + (tg || '—'), 'Код устройства: ' + dev].join('\n');
+        window.open('https://t.me/' + TG + '?text=' + encodeURIComponent(text), '_blank');
+        showStatus('sent', { name, tg });
+      });
+    }
+  });
+
+  $('check').addEventListener('click', checkStatus);
+  $('again').addEventListener('click', () => { $('stcard').classList.add('hidden'); $('formCard').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  $('reset').addEventListener('click', () => { localStorage.removeItem('SGU_DEV'); deviceId(); showStatus('none'); });
+  $('keyToggle').addEventListener('click', () => $('keyBlock').classList.toggle('hidden'));
+
+  $('go').addEventListener('click', async () => {
+    const k = $('key').value.trim();
+    if (!k) return;
+    try {
+      const data = await (await fetch('keys.json?r=' + Date.now())).json();
+      const kh = await sha256hex(k);
+      const found = (data.keys || []).find(x => x.hash === kh);
+      if (!found || found.dev) { $('kok').style.color = '#ff6b6b'; $('kok').textContent = 'Ключ не найден.'; return; }
+      const dev = deviceId();
+      if (found.deviceHash && await sha256hex(dev + '|' + kh) !== found.deviceHash) {
+        $('kok').style.color = '#ff6b6b'; $('kok').textContent = 'Ключ уже используется на другом устройстве.'; return;
+      }
+      sessionStorage.setItem('SGU_ACCESS', kh); saveDev();
+      openMenu();
+    } catch (e) {
+      $('kok').style.color = '#ff6b6b'; $('kok').textContent = 'Не удалось проверить ключ.';
+    }
+  });
+  $('key').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').click(); });
+  $('enter').addEventListener('click', openMenu);
+  function openMenu() { $('club').classList.add('hidden'); $('admin').classList.add('hidden'); $('menu').classList.remove('hidden'); }
+
+  /* ---------- админка ---------- */
+  let DATA = { keys: [] };
+  let seenApps = new Map();
+
+  async function saveToGitHub() {
+    setStatus('СОХРАНЕНИЕ…', 'busy');
+    const json = JSON.stringify(DATA, null, 2);
+    try {
+      const tok = localStorage.getItem('SGU_GH_TOKEN');
+      if (!tok) { setStatus('НЕТ ТОКЕНА — вставь ghp_… через «🔑 ТОКЕН»', 'err'); return; }
+      const h = { Authorization: 'Bearer ' + tok, 'User-Agent': 'sgu-admin', Accept: 'application/vnd.github+json' };
+      let sha;
+      try { sha = (await (await fetch(`https://api.github.com/repos/${REPO}/contents/keys.json`, { headers: h })).json()).sha; } catch (e) {}
+      const res = await fetch(`https://api.github.com/repos/${REPO}/contents/keys.json`, {
+        method: 'PUT', headers: { ...h, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'update keys.json (admin)', content: btoa(unescape(encodeURIComponent(json))), branch: 'main', sha })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      setStatus('СОХРАНЕНО ✓ (на сайте через ~минуту)', 'ok');
+    } catch (e) {
+      setStatus('НЕ СОХРАЛОСЬ: ' + e.message, 'err');
+    }
+  }
+
+  function renderKeys() {
+    const list = $('list');
+    list.innerHTML = '';
+    DATA.keys.filter(k => !k.admin && !k.dev).forEach(k => {
+      const div = document.createElement('div');
+      div.className = 'arow';
+      const devState = k.deviceHash
+        ? `<span class="bound">● закреплён (${k.deviceHash.slice(0, 8)}…)</span>`
+        : '<span class="unbound">○ не закреплён</span>';
+      div.innerHTML = `<div class="r1"><span><b>${k.name}</b> ${devState}<br><span class="mono">${k.hash.slice(0, 12)}…</span></span></div>`;
+      const r2 = document.createElement('div'); r2.className = 'r2';
+      const del = document.createElement('button'); del.className = 'btn red small'; del.style.margin = '0'; del.textContent = 'УДАЛИТЬ';
+      del.onclick = async () => { DATA.keys = DATA.keys.filter(x => x !== k); renderKeys(); await saveToGitHub(); };
+      const inp = document.createElement('input'); inp.placeholder = 'Код устройства';
+      const bind = document.createElement('button'); bind.className = 'btn dark small'; bind.style.margin = '0';
+      bind.textContent = k.deviceHash ? 'СМЕНИТЬ УСТР.' : 'ЗАКРЕПИТЬ';
+      bind.onclick = async () => {
+        const code = inp.value.trim(); if (!code) return;
+        k.deviceHash = await sha256hex(code + '|' + k.hash); inp.value = '';
+        renderKeys(); await saveToGitHub();
+      };
+      const unbind = document.createElement('button'); unbind.className = 'btn dark small'; unbind.style.margin = '0'; unbind.textContent = 'ОТВЯЗАТЬ';
+      unbind.onclick = async () => { delete k.deviceHash; renderKeys(); await saveToGitHub(); };
+      r2.appendChild(inp); r2.appendChild(bind); r2.appendChild(unbind); r2.appendChild(del);
+      div.appendChild(r2);
+      list.appendChild(div);
+    });
+  }
+
+  function appRow(app) {
+    const div = document.createElement('div');
+    div.className = 'arow';
+    div.innerHTML = `<div class="r1"><span><b>${app.name || 'без имени'}</b>${app.tg ? '<br><span class="mono">' + app.tg + '</span>' : ''}<br><span class="mono">уст-во: ${app.dev}</span></span><span class="unbound">${app.time || ''}</span></div>`;
+    const r2 = document.createElement('div'); r2.className = 'r2';
+    const ok = document.createElement('button'); ok.className = 'btn green small'; ok.style.margin = '0'; ok.textContent = 'ПУСТИТЬ';
+    ok.onclick = async () => {
+      ok.disabled = true;
+      DATA.keys.push({ name: app.name || 'без имени', tg: app.tg || '', hash: await sha256hex('DEV|' + app.dev), dev: true });
+      DATA.rejected = (DATA.rejected || []).filter(x => x.dev !== app.dev);
+      renderKeys(); await saveToGitHub();
+      $('appsStatus').innerHTML = `Заявку «${app.name || ''}» пустил — у него появится «Доступ открыт».`;
+      div.remove();
+    };
+    const no = document.createElement('button'); no.className = 'btn red small'; no.style.margin = '0'; no.textContent = 'ОТКАЗ';
+    no.onclick = async () => {
+      const comment = prompt('Комментарий к отказу (покажется человеку):') || '';
+      no.disabled = true;
+      DATA.rejected = DATA.rejected || [];
+      DATA.rejected.push({ dev: app.dev, name: app.name || '', tg: app.tg || '', time: app.time || '', comment });
+      renderKeys(); await saveToGitHub();
+      $('appsStatus').textContent = 'Заявку отклонил.';
+      div.remove();
+    };
+    const del = document.createElement('button'); del.className = 'btn dark small'; del.style.margin = '0'; del.textContent = 'УДАЛИТЬ';
+    del.onclick = () => div.remove();
+    r2.appendChild(ok); r2.appendChild(no); r2.appendChild(del);
+    div.appendChild(r2);
+    return div;
+  }
+
+  function addApp(app) {
+    if (seenApps.has(app.dev + (app.time || ''))) return;
+    seenApps.set(app.dev + (app.time || ''), true);
+    $('appsList').prepend(appRow(app));
+    $('appsStatus').textContent = 'Новые заявки приходят автоматически. «ПУСТИТЬ» откроет доступ только на его устройстве.';
+  }
+
+  function startApps() {
+    fetch('https://ntfy.sh/' + NTFY_TOPIC + '/json?poll=1')
+      .then(r => r.json())
+      .then(msgs => {
+        (msgs || []).filter(m => m.event === 'message' && m.message && m.message.includes('"dev":')).forEach(m => {
+          try { const a = JSON.parse(m.message); a.time = fmtTime(m.time); addApp(a); } catch (e) {}
+        });
+        $('appsStatus').textContent = 'Заявки загружены. Новые будут прилетать сами. Если у гостя сервис заблокирован — он пришлёт код в Telegram, добавь вручную.';
+      })
+      .catch(() => { $('appsStatus').textContent = 'Очередь заявок недоступна у вашего провайдера — добавляйте вручную из Telegram.'; });
+  }
+
+  function renderManual() {}
+  $('mOk').addEventListener('click', async () => {
+    const dev = $('mDev').value.trim();
+    if (!dev) { $('appsStatus').textContent = 'Вставь код устройства.'; return; }
+    DATA.keys.push({ name: $('mName').value.trim() || 'без имени', tg: $('mTg').value.trim() || '', hash: await sha256hex('DEV|' + dev), dev: true });
+    DATA.rejected = (DATA.rejected || []).filter(x => x.dev !== dev);
+    renderKeys(); await saveToGitHub();
+    $('mName').value = ''; $('mTg').value = ''; $('mDev').value = '';
+    $('appsStatus').innerHTML = 'Пустил — у человека появится «Доступ открыт».';
+  });
+
+  $('gen').addEventListener('click', async () => {
+    const name = $('who').value.trim() || 'без имени';
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const rnd = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(v => abc[v % abc.length]).join('');
+    const key = $('customKey').value.trim() || ('SGU-' + rnd.slice(0, 4) + '-' + rnd.slice(4));
+    DATA.keys.push({ name, hash: await sha256hex(key) });
+    $('newkey').innerHTML = `Ключ для <b>${name}</b>: <span class="mono">${key}</span><br>Передай его — после сохранения заработает.`;
+    $('who').value = ''; $('customKey').value = '';
+    renderKeys(); await saveToGitHub();
+  });
+
+  $('admGo').addEventListener('click', async () => {
+    try {
+      DATA = await (await fetch('keys.json?r=' + Date.now())).json();
+      if (!DATA.keys) DATA.keys = [];
+      const h = await sha256hex($('pin').value.trim());
+      if ((DATA.keys || []).some(x => x.admin && x.hash === h) || h === PIN_HASH) {
+        $('admAuth').classList.add('hidden');
+        $('admPanel').classList.remove('hidden');
+        renderKeys();
+        startApps();
+      } else {
+        $('admerr').textContent = 'Неверный ключ.';
+      }
+    } catch (e) { $('admerr').textContent = 'Нет keys.json'; }
+  });
+  $('pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('admGo').click(); });
+  $('admTokBtn').addEventListener('click', () => $('tok').classList.toggle('hidden'));
+  $('tok').addEventListener('input', () => {
+    if ($('tok').value.trim().startsWith('ghp_')) {
+      localStorage.setItem('SGU_GH_TOKEN', $('tok').value.trim());
+      $('tok').value = ''; $('tok').classList.add('hidden');
+      $('admTokBtn').innerText = '🔑 ТОКЕН СОХРАНЁН ✓';
+    }
+  });
+  $('admLink').addEventListener('click', () => { $('club').classList.add('hidden'); $('menu').classList.add('hidden'); $('admin').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  $('admClose').addEventListener('click', () => { $('admin').classList.add('hidden'); $('club').classList.remove('hidden'); });
+  $('admExit').addEventListener('click', () => { $('admPanel').classList.add('hidden'); $('admAuth').classList.remove('hidden'); });
+
+  /* ---------- старт ---------- */
+  (async () => {
+    if (await tryOpenMenu()) openMenu();
+  })();
 })();
-</script>
-</head>
-<body>
-<main id="menu">
-  <h1>Выбор СГУ</h1>
-  <p class="sub">Выберите пульт для запуска</p>
-  <div class="choices">
-    <button class="choice" onclick="openPanel('gibdd/index.html')">
-      <strong>ГИБДД по ЧР</strong><span>Пульт СГУ ГИБДД</span><span class="credit">shama&amp;by grek</span>
-    </button>
-    <button class="choice" onclick="openPanel('hazard/index.html')">
-      <strong>Premier Hazard 7007</strong><span>Пульт Hazard 7007</span><span class="credit">shama&amp;by grek</span>
-    </button>
-    <button class="choice" onclick="openPanel('k13/index.html')">
-      <strong>СГУ К-13</strong><span>Пульт К-13</span><span class="credit">shama&amp;by grek</span>
-    </button>
-  </div>
-</main>
-<section id="app">
-  <button id="back" onclick="backToMenu()">← Выбор СГУ</button>
-  <iframe id="panel" title="Пульт СГУ"></iframe>
-</section>
-<script>
-function openPanel(src){
-  document.getElementById('panel').src=src;
-  document.getElementById('menu').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('back').style.display='block';
-}
-function backToMenu(){
-  document.getElementById('panel').src='about:blank';
-  document.getElementById('app').style.display='none';
-  document.getElementById('menu').style.display='block';
-}
 </script>
 </body>
 </html>
