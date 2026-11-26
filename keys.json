@@ -1,18 +1,5 @@
 {
   "keys": [
-    {
-      "name": "владелец",
-      "hash": "7aa261819a06b83a86c876f90b7d842d11e9fbd08459dc277a73a008f03d99e4",
-      "admin": true
-    },
-    {
-      "name": "Шамиль",
-      "hash": "48e8898d5214036ae7d890268473649bb7b6cca30613d9aede3b372f8f05164d"
-    },
-    {
-      "name": "герчик",
-      "hash": "85463463cfdb3ac12d18d5c40f3bdf996ffaef7489f41de3a54c6c9e6fae781b",
-      "deviceHash": "b6479907f12f95104e1d14ac9ab7c81520d72ac79fe8317dd132d9b2a3c4f722"
-    }
+    { "name": "владелец", "hash": "7aa261819a06b83a86c876f90b7d842d11e9fbd08459dc277a73a008f03d99e4", "admin": true }
   ]
 }
