@@ -16,7 +16,8 @@
     },
     {
       "name": "герчо",
-      "hash": "3db7c41ad5efc0c4a976778e328494310d92ff7c16de5b0d3169b915e9895370"
+      "hash": "3db7c41ad5efc0c4a976778e328494310d92ff7c16de5b0d3169b915e9895370",
+      "deviceHash": "23b2c6d392df282874906fc6ea6e6e68f8d669831a249fcbdea2a1dc080af979"
     }
   ]
 }
