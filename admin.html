@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ-панель — СГУ</title>
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+html,body{margin:0;background:#101216;color:#f4f5f7}
+body{display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100dvh}
+.card{width:min(520px,100%);background:#171b22;border:1px solid #39414d;border-radius:14px;padding:22px;margin-bottom:16px}
+h1{font-size:19px;margin:0 0 14px}
+input{width:100%;padding:12px;border-radius:9px;border:1px solid #39414d;background:#0f1114;color:#fff;font-size:15px;margin-bottom:8px}
+button{padding:11px 14px;border-radius:9px;border:none;background:#d5b957;color:#15161a;font-weight:800;cursor:pointer;font-size:13px}
+button.sec{background:#23272f;color:#e8eaee}
+button.danger{background:#3b181c;color:#fca5a5}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#121418;border:1px solid #282c34;border-radius:9px;padding:9px 12px;margin-bottom:7px;font-size:13px}
+.mono{font-family:Consolas,monospace;color:#d5b957}
+.out{width:100%;min-height:130px;background:#0f1114;color:#9fe8a0;border:1px solid #282c34;border-radius:9px;padding:10px;font-family:Consolas,monospace;font-size:11.5px}
+.hint{font-size:11.5px;color:#8b93a0;line-height:1.5}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="card" id="auth">
+  <h1>🔐 Админ-панель СГУ</h1>
+  <input id="pin" placeholder="Master-ключ (SGU-…)" autocomplete="off">
+  <button id="go">ВОЙТИ</button>
+  <div class="hint" id="err" style="color:#ff6b6b;margin-top:8px"></div>
+</div>
+
+<div id="panel" class="hidden">
+  <div class="card">
+    <h1>Выдать новый ключ</h1>
+    <input id="who" placeholder="Имя человека (кто получит ключ)">
+    <button id="gen">＋ СГЕНЕРИРОВАТЬ КЛЮЧ</button>
+    <div class="hint" id="newkey" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h1>Активные ключи</h1>
+    <div id="list"></div>
+    <button class="sec" id="refresh">↺ ОБНОВИТЬ</button>
+  </div>
+  <div class="card">
+    <h1>Обновить keys.json на сайте</h1>
+    <p class="hint">Нажмите «Скопировать», затем пришлите скопированное боту-помощнику (или загрузите файл keys.json в репозиторий через GitHub: Add file → Upload files → keys.json).</p>
+    <textarea class="out" id="out" readonly></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="copy">СКОПИРОВАТЬ keys.json</button>
+      <button class="sec" id="download">СКАЧАТЬ ФАЙЛ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  function utf8(s){const o=[];for(const ch of s){const c=ch.codePointAt(0);if(c<0x80)o.push(c);else if(c<0x800)o.push(0xC0|(c>>6),0x80|(c&63));else o.push(0xE0|(c>>12),0x80|((c>>6)&63),0x80|(c&63));}return new Uint8Array(o);}
+  function rr(x,n){return (x>>>n)|(x<<(32-n));}
+  function sha256(bytes){
+    const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const len=bytes.length,bitLen=len*8;
+    const p=[...bytes,0x80];
+    while(p.length%64!==56)p.push(0);
+    for(let i=7;i>=0;i--)p.push(Math.floor(bitLen/Math.pow(2,i*8))&255);
+    for(let off=0;off<p.length;off+=64){
+      const w=[];
+      for(let i=0;i<16;i++)w[i]=(p[off+i*4]<<24)|(p[off+i*4+1]<<16)|(p[off+i*4+2]<<8)|p[off+i*4+3];
+      for(let i=16;i<64;i++){
+        const s0=rr(w[i-15],7)^rr(w[i-15],18)^(w[i-15]>>>3);
+        const s1=rr(w[i-2],17)^rr(w[i-2],19)^(w[i-2]>>>10);
+        w[i]=(w[i-16]+s0+w[i-7]+s1)|0;
+      }
+      let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+      for(let i=0;i<64;i++){
+        const S1=rr(e,6)^rr(e,11)^rr(e,25);
+        const ch=(e&f)^(~e&g);
+        const t1=(h+S1+ch+K[i]+w[i])|0;
+        const S0=rr(a,2)^rr(a,13)^rr(a,22);
+        const mj=(a&b)^(a&c)^(b&c);
+        const t2=(S0+mj)|0;
+        h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+      }
+      H=[(H[0]+a)|0,(H[1]+b)|0,(H[2]+c)|0,(H[3]+d)|0,(H[4]+e)|0,(H[5]+f)|0,(H[6]+g)|0,(H[7]+h)|0];
+    }
+    return new Uint8Array(H.map(x=>[(x>>>24)&255,(x>>>16)&255,(x>>>8)&255,x&255]).flat());
+  }
+  const sha256hex = s => sha256(utf8(s)).map(x=>x.toString(16).padStart(2,'0')).join('');
+
+  let DATA = { keys: [] };
+  const $ = id => document.getElementById(id);
+
+  async function loadKeys() {
+    DATA = await (await fetch('keys.json?r=' + Date.now())).json();
+  }
+  function render() {
+    const list = $('list');
+    list.innerHTML = '';
+    DATA.keys.forEach(k => {
+      const div = document.createElement('div');
+      div.className = 'row';
+      div.innerHTML = `<span>${k.name}${k.admin ? ' <span class="hint">(админ)</span>' : ''}</span><span class="mono">${k.hash.slice(0,10)}…</span>`;
+      if (!k.admin) {
+        const btn = document.createElement('button');
+        btn.className = 'danger';
+        btn.textContent = 'УДАЛИТЬ';
+        btn.onclick = () => { DATA.keys = DATA.keys.filter(x => x !== k); render(); updateOut(); };
+        div.appendChild(btn);
+      }
+      list.appendChild(div);
+    });
+    updateOut();
+  }
+  function updateOut() {
+    $('out').value = JSON.stringify(DATA, null, 2);
+  }
+  function rnd() {
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(v => abc[v % abc.length]).join('');
+  }
+
+  $('go').addEventListener('click', async () => {
+    try {
+      await loadKeys();
+      const h = sha256hex($('pin').value.trim().toUpperCase());
+      if ((DATA.keys || []).some(x => x.admin && x.hash === h)) {
+        $('auth').classList.add('hidden');
+        $('panel').classList.remove('hidden');
+        render();
+      } else {
+        $('err').innerText = 'Неверный master-ключ.';
+      }
+    } catch (e) { $('err').innerText = 'Нет keys.json'; }
+  });
+
+  $('gen').addEventListener('click', () => {
+    const name = $('who').value.trim() || 'без имени';
+    const key = 'SGU-' + rnd().slice(0,4) + '-' + rnd().slice(4);
+    DATA.keys.push({ name, hash: sha256hex(key) });
+    $('newkey').innerHTML = `Ключ для <b>${name}</b>: <span class="mono">${key}</span><br>Передайте его лично — он появится в списке ниже.`;
+    $('who').value = '';
+    render();
+  });
+
+  $('refresh').addEventListener('click', async () => { await loadKeys(); render(); });
+  $('copy').addEventListener('click', () => { navigator.clipboard.writeText($('out').value); $('copy').innerText = 'СКОПИРОВАНО ✓'; setTimeout(()=>$('copy').innerText='СКОПИРОВАТЬ keys.json',1500); });
+  $('download').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([$('out').value], { type: 'application/json' }));
+    a.download = 'keys.json';
+    a.click();
+  });
+})();
+</script>
+</body>
+</html>
