@@ -42,6 +42,11 @@ button[disabled]{opacity:.5;cursor:wait}
 
 <div id="panel" class="hidden">
   <div class="card">
+    <h1>📨 Заявки на вступление</h1>
+    <div class="hint" id="appsStatus">Подключение к очереди заявок…</div>
+    <div id="appsList" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
     <h1>Выдать ключ</h1>
     <input id="who" placeholder="Имя человека">
     <input id="customKey" placeholder="Ключ: оставьте пустым для автогенерации или впишите свой">
@@ -189,6 +194,83 @@ button[disabled]{opacity:.5;cursor:wait}
   });
 
   $('copy').addEventListener('click', () => navigator.clipboard.writeText($('out').value));
+
+  /* ===== Заявки (ntfy) ===== */
+  const NTFY_TOPIC = 'sgu-z7k-club-xkmx77-91fa';
+  let seenApps = new Map(); // dev -> app
+
+  function appRow(app, live) {
+    const div = document.createElement('div');
+    div.className = 'row';
+    const r1 = document.createElement('div'); r1.className = 'r1';
+    r1.innerHTML = `<span><b>${app.name || 'без имени'}</b> ${app.tg ? '<br><span class="mono">' + app.tg + '</span>' : ''}<br><span class="mono">уст-во: ${app.dev.slice(0, 12)}…</span></span><span class="unbound">${app.time || ''}</span>`;
+    const r2 = document.createElement('div'); r2.className = 'r2';
+    const ok = document.createElement('button'); ok.textContent = 'ПУСТИТЬ';
+    ok.onclick = async () => {
+      ok.disabled = true;
+      DATA.keys.push({ name: app.name || 'без имени', tg: app.tg || '', hash: await sha256hex('DEV|' + app.dev), dev: true });
+      DATA.rejected = (DATA.rejected || []).filter(x => x.dev !== app.dev);
+      render(); await saveToGitHub();
+      appsStatus.textContent = 'Заявку «' + (app.name || '') + '» пустил — на его устройстве появится «Доступ открыт».';
+      div.remove();
+    };
+    const no = document.createElement('button'); no.className = 'danger'; no.textContent = 'ОТКАЗ';
+    no.onclick = async () => {
+      const comment = prompt('Комментарий к отказу (покажется человеку):') || '';
+      no.disabled = true;
+      DATA.rejected = DATA.rejected || [];
+      DATA.rejected.push({ dev: app.dev, name: app.name || '', tg: app.tg || '', time: app.time || '', comment });
+      render(); await saveToGitHub();
+      appsStatus.textContent = 'Заявку «' + (app.name || '') + '» отклонил.';
+      div.remove();
+    };
+    const del = document.createElement('button'); del.className = 'sec'; del.textContent = 'УДАЛИТЬ';
+    del.onclick = () => div.remove();
+    r2.appendChild(ok); r2.appendChild(no); r2.appendChild(del);
+    div.appendChild(r1); div.appendChild(r2);
+    return div;
+  }
+
+  function addApp(app, live) {
+    if (seenApps.has(app.dev)) return;
+    seenApps.set(app.dev, true);
+    $('appsList').prepend(appRow(app, live));
+    $('appsStatus').textContent = 'Новые заявки приходят автоматически. «ПУСТИТЬ» откроет доступ только на его устройстве.';
+  }
+
+  function loadHistory() {
+    fetch('https://ntfy.sh/' + NTFY_TOPIC + '/json?poll=1')
+      .then(r => r.json())
+      .then(msgs => {
+        (msgs || []).filter(m => m.event === 'message' && m.message && m.message.includes('"dev":')).forEach(m => {
+          try {
+            const a = JSON.parse(m.message);
+            a.time = fmtTs(m.time);
+            addApp(a, false);
+          } catch (e) {}
+        });
+      }).catch(() => {});
+    const es = new EventSource('https://ntfy.sh/' + NTFY_TOPIC + '/sse');
+    es.onmessage = (ev) => {
+      try {
+        const m = JSON.parse(ev.data);
+        if (m.event !== 'message' || !m.message || !m.message.includes('"dev":')) return;
+        const a = JSON.parse(m.message);
+        a.time = fmtTs(m.time);
+        addApp(a, true);
+      } catch (e) {}
+    };
+    es.onerror = () => { $('appsStatus').textContent = 'Очередь заявок временно недоступна — обнови страницу.'; };
+  }
+
+  function fmtTs(ts) {
+    const d = new Date(ts * 1000);
+    const p = n => String(n).padStart(2, '0');
+    return p(d.getDate()) + '.' + p(d.getMonth() + 1) + ', ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  loadHistory();
+
   $('download').addEventListener('click', () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([$('out').value], { type: 'application/json' }));
