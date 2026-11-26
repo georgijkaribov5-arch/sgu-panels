@@ -2,103 +2,141 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Premier Hazard 7007</title>
 <style>
-  * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #141416; font-family: 'Arial Narrow', Arial, sans-serif; }
-  .unit { position: relative; display: flex; align-items: center; box-shadow: 0 20px 30px #000; }
-  .ear { width: 38px; height: 112px; position: relative; z-index: 1; background: linear-gradient(180deg, #2b2b2e 0%, #19191b 55%, #101012 100%); border: 1px solid #353538; box-shadow: inset 0 2px 2px rgba(255,255,255,.12); }
-  .ear.l { border-radius: 12px 0 0 12px; margin-right: -4px; }
-  .ear.r { border-radius: 0 12px 12px 0; margin-left: -4px; }
-  .ear::after { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 24px; height: 18px; background: #141416; box-shadow: inset 0 2px 4px #000; }
-  .ear.l::after { left: -1px; border-radius: 0 9px 9px 0; border: 1px solid #333; border-left: none; }
-  .ear.r::after { right: -1px; border-radius: 9px 0 0 9px; border: 1px solid #333; border-right: none; }
-  .case { position: relative; z-index: 2; width: 356px; height: 274px; border-radius: 16px; padding: 13px; background: radial-gradient(circle at 25% 15%, rgba(255,255,255,.07), transparent 55%), linear-gradient(165deg, #27272a 0%, #161618 65%, #0d0d0f 100%); box-shadow: inset 0 2px 1.5px rgba(255,255,255,.18), inset 0 -4px 7px rgba(0,0,0,.95), 0 0 0 1.5px #09090a; }
-  .face { position: relative; width: 100%; height: 100%; border-radius: 8px; background: linear-gradient(180deg, #1d1d20 0%, #141416 100%); box-shadow: inset 0 2px 6px rgba(0,0,0,.9); }
-  .lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .t { position: absolute; color: #e8cf6b; font-weight: 800; letter-spacing: .3px; line-height: 1; text-shadow: 0 1px 1px #000; }
-  .d { position: absolute; width: 8.5px; height: 8.5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff5b8, #d8b84a 75%, #8c701e); box-shadow: 0 1px 2px #000; transition: all 0.1s; }
-  .d.active { background: #ff0000 !important; box-shadow: 0 0 12px #ff0000, inset 0 0 5px #ff8080 !important; }
-  .d-off { top: 96px; left: 26px; width: 7.5px; height: 7.5px; }
-  .t-off { top: 109px; left: 16px; font-size: 13px; }
-  .rj { position: absolute; bottom: 13px; left: 16px; width: 78px; height: 92px; background: #0a0a0c; border-radius: 6px; border: 2px solid #2a2a2e; box-shadow: inset 0 5px 10px #000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6px; }
-  .rj-top { width: 56px; height: 52px; background: #040405; border: 1px solid #222; border-radius: 3px; position: relative; }
-  .rj-pins { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 38px; height: 15px; background: repeating-linear-gradient(90deg, #cfa538 0 3px, transparent 3px 6.5px); }
-  .rj-red { width: 38px; height: 17px; border-radius: 2px 2px 4px 4px; position: relative; background: linear-gradient(180deg, #e02e2e, #9c1717); box-shadow: 0 2px 3px #000; }
-  .rj-red::before { content: ''; position: absolute; top: -4px; left: 8px; width: 22px; height: 5px; background: #be2020; border-radius: 2px 2px 0 0; }
-  .t-hilo { top: 17px; right: 120px; font-size: 12.5px; } .d-hilo { top: 18px; right: 106px; }
-  .t-yelp { top: 42px; right: 132px; font-size: 12.5px; } .d-yelp { top: 43px; right: 118px; }
-  .t-wail { top: 67px; right: 133px; font-size: 12.5px; } .d-wail { top: 68px; right: 119px; }
-  .t-stby { top: 92px; right: 124px; font-size: 12.5px; } .d-stby { top: 93px; right: 110px; }
-.badge { position: absolute; top: 122px; left: 103px; width: 78px; height: 32px; border: 2px solid #e2c65e; border-radius: 5px; color: #e8cf6b; font-weight: 800; font-size: 10.5px; line-height: 1.
-12; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .num { position: absolute; bottom: 20px; left: 112px; color: #e8cf6b; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
-  .d-pa  { top: 109px; left: 236px; width: 7.5px; height: 7.5px; }
-  .d-rad { top: 112px; left: 264px; width: 7.5px; height: 7.5px; }
-  .t-pa  { top: 121px; left: 230px; font-size: 12px; }
-  .t-rad { top: 121px; left: 254px; font-size: 12px; }
-  .t-man  { top: 141px; left: 204px; font-size: 12px; }
-  .t-horn { top: 141px; left: 264px; font-size: 12px; }
-  .b-slot { position: absolute; bottom: 14px; width: 52px; height: 52px; background: #0a0a0c; border-radius: 8px; padding: 3.5px; box-shadow: inset 0 2px 5px #000, 0 1px 1px rgba(255,255,255,.1); }
-  .s-man  { left: 194px; }
-  .s-horn { left: 262px; }
-  .btn { width: 100%; height: 100%; border: none; border-radius: 6px; cursor: pointer; background: radial-gradient(circle at 35% 30%, #fafaf5, #dcdcd2 70%, #b5b5ab); box-shadow: 0 3px 6px #000, inset 0 2px 2px #fff, inset 0 -2px 3px rgba(0,0,0,.3); transition: transform .06s; }
-  .btn:active { transform: translateY(3px) scale(.96); box-shadow: 0 0px 2px #000, inset 0 2px 5px rgba(0,0,0,0.5); }
-  .knob { position: absolute; border-radius: 50%; cursor: pointer; box-shadow: 0 10px 18px rgba(0,0,0,.95), 0 3px 5px #000, 0 0 0 2px #09090a; }
-  .k-vol  { top: 16px; left: 25px; width: 72px; height: 72px; }
-  .k-mode { top: 10px; right: 16px; width: 96px; height: 96px; }
-  .k-gear { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#303034 0deg 6deg, #121214 6deg 12deg); transition: transform .15s ease-out; will-change: transform; }
-  .k-top { width: 75%; height: 75%; border-radius: 50%; position: relative; background: radial-gradient(circle at 35% 30%, #36363a, #1e1e21 65%, #111113); box-shadow: inset 0 1.5px 2px rgba(255,255,255,.2), 0 2px 5px #000; }
-  .k-top::before { content: ''; position: absolute; top: 6%; bottom: 6%; left: 50%; transform: translateX(-50%); width: 10px; border-radius: 3px; background: linear-gradient(90deg, #222225, #323236 50%, #18181a); box-shadow: -2px 0 3px rgba(0,0,0,.6), 2px 0 3px rgba(0,0,0,.6); }
-  .k-top::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4.5px; height: 8px; background: #f5f5f7; border-radius: 1px; z-index: 2; }
-  .k-vol .k-top::after  { top: 3px; }
-  .k-mode .k-top::after { bottom: 4px; }
+/* Пульт 1 в 1 по скрину: вертикальный телефонный вид, панель сверху, две большие кнопки внизу */
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;font-family:'Segoe UI',Arial,sans-serif}
+html,body{margin:0;background:#0a0a0c;color:#e8e8ea}
+body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:10px 12px 18px}
+
+/* ---- Панель ---- */
+.stage{width:100%;max-width:400px;background:linear-gradient(180deg,#05050699,#0a0a0c00)}
+.panel{
+  position:relative;width:100%;aspect-ratio:340/430;
+  background:linear-gradient(165deg,#1c1e22 0%,#101216 55%,#0a0b0e 100%);
+  border-radius:14px;
+  box-shadow:0 22px 40px rgba(0,0,0,.85), inset 0 1px 1px rgba(255,255,255,.1), inset 0 -6px 12px rgba(0,0,0,.9);
+}
+.frame{position:absolute;inset:6px;border:1.5px solid #3a3d44;border-radius:10px;pointer-events:none}
+
+/* RJ45 слева сверху */
+.rj{position:absolute;top:22px;left:22px;width:62px;height:74px;background:#060708;border-radius:6px;border:1.5px solid #2c2f36;box-shadow:inset 0 4px 8px #000;display:flex;align-items:center;justify-content:center}
+.rj-inner{width:46px;height:34px;background:#0e0f11;border-radius:4px;position:relative}
+.rj-pins{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:30px;height:12px;background:repeating-linear-gradient(90deg,#b9a04a 0 3px,transparent 3px 6.4px)}
+
+/* Подпись OFF/VOL */
+.t-vol{position:absolute;top:26px;right:120px;color:#d8dade;font-size:12px;font-weight:700;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.5px}
+.t-vol i{position:absolute;top:2px;left:-9px;width:5px;height:5px;border-radius:50%;background:#cfd2d6}
+
+/* Ручка */
+.knob{
+  position:absolute;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 38% 32%, #202227 0%, #121317 55%, #060708 100%);
+  box-shadow:0 8px 16px rgba(0,0,0,.9), inset 0 1.5px 2px rgba(255,255,255,.14), inset 0 -6px 12px rgba(0,0,0,.85), 0 0 0 2px #232529;
+}
+.knob .slot{position:absolute;left:50%;top:9%;transform:translateX(-50%);width:9px;height:46%;border-radius:5px;background:linear-gradient(90deg,#000,#2e3138 55%,#0a0b0d)}
+.knob .dot{position:absolute;right:14%;top:46%;width:7px;height:7px;border-radius:50%;background:#f4f6f8;box-shadow:0 0 4px #000}
+.k-vol{top:26px;right:26px;width:74px;height:74px;transform:rotate(115deg)}
+.k-mode{top:52%;right:24px;width:96px;height:96px;transform:rotate(14deg)}
+.k-gear{position:absolute;inset:0;border-radius:50%;transition:transform .15s ease-out;will-change:transform}
+
+/* Надписи/бейдж на левой половине */
+.t-7007{position:absolute;top:118px;left:44px;color:#d8dade;font-size:15px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:1px}
+.badge{position:absolute;top:148px;left:76px;border:1.5px solid #3a3d44;border-radius:5px;padding:5px 6px;color:#d8dade;font-size:8.5px;font-weight:800;line-height:1.25;text-align:center;display:flex;flex-direction:column}
+.badge span{letter-spacing:.6px}
+
+/* Левый столбик: белые кнопки MAN/HORN + подписи */
+.wbtn{position:absolute;left:26px;width:44px;height:44px;border-radius:9px;border:none;cursor:pointer;background:linear-gradient(180deg,#f2f2ef,#cfcec8);box-shadow:0 3px 6px #000, inset 0 1.5px 2px #fff, inset 0 -2px 4px rgba(0,0,0,.3);transition:transform .05s}
+.wbtn:active{transform:translateY(2px)}
+.wbtn:disabled{opacity:.28;pointer-events:none}
+#btnAst{top:262px}
+#btnBild{top:346px}
+.t-lbl{position:absolute;color:#d8dade;font-size:12px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg)}
+.t-pa{top:246px;left:84px}
+.t-man{top:270px;left:96px}
+.t-horn{top:338px;left:84px}
+.t-radio{top:288px;left:110px}
+
+/* Правый столбик надписей режимов с точками */
+.m-marks{position:absolute;right:132px;top:150px;display:flex;flex-direction:column;gap:18px;align-items:flex-end}
+.m-mark{display:flex;align-items:center;gap:6px;color:#d8dade;font-size:11.5px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.8px}
+.m-mark i{width:5.5px;height:5.5px;border-radius:50%;background:#cfd2d6}
+.m-marks .m-mark:nth-child(1){transform:none;writing-mode:horizontal-tb}
+
+.m-pa{position:absolute;right:134px;top:322px;display:flex;flex-direction:column;align-items:flex-end;gap:16px}
+.m-pa .m-mark{writing-mode:vertical-rl;transform:rotate(180deg)}
+
+/* Ножки панели */
+.feet{display:flex;justify-content:center;gap:70px;margin-top:2px}
+.foot{width:64px;height:44px;background:#0d0e11;border-radius:0 0 8px 8px;box-shadow:0 8px 12px rgba(0,0,0,.7), inset 0 2px 3px rgba(255,255,255,.05)}
+
+/* ---- Большие кнопки ---- */
+.big-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:400px;margin-top:18px}
+.big{
+  padding:20px 10px;border:none;border-radius:12px;cursor:pointer;
+  background:#232529;color:#fff;font-size:19px;font-weight:800;letter-spacing:1.5px;
+  box-shadow:0 10px 22px rgba(0,0,0,.5), inset 0 1px 1px rgba(255,255,255,.08);
+  transition:transform .05s, box-shadow .05s, background .1s;
+}
+.big:active,.big.pressed{transform:translateY(3px);box-shadow:0 3px 8px rgba(0,0,0,.5);background:#2e3138}
+.stat{text-align:center;font-size:10px;font-weight:700;color:#555;margin-top:12px;letter-spacing:.4px;height:14px}
 </style>
 </head>
 <body>
 
-<!-- Каждый звук — отдельный файл из этой же папки -->
+<div class="stage">
+  <div class="panel">
+    <div class="frame"></div>
+
+    <div class="rj"><div class="rj-inner"><div class="rj-pins"></div></div></div>
+
+    <div class="t-vol"><i></i>OFF/VOL</div>
+    <div class="knob k-vol" id="vol"><div class="slot"></div><div class="dot"></div></div>
+
+    <div class="t-7007">7007</div>
+    <div class="badge"><span>PREMIER</span><span>HAZARD</span></div>
+
+    <div class="t-lbl t-pa">PA</div>
+    <div class="t-lbl t-man">MAN</div>
+    <div class="t-lbl t-radio">RADIO</div>
+    <div class="t-lbl t-horn">HORN</div>
+
+    <button class="wbtn" id="btnAst" title="MAN"></button>
+    <button class="wbtn" id="btnBild" title="HORN"></button>
+
+    <div class="m-marks">
+      <div class="m-mark">HI<i></i></div>
+      <div class="m-mark"><i></i>YELP</div>
+      <div class="m-mark"><i></i>WAIL</div>
+      <div class="m-mark"><i></i>STANDBY</div>
+    </div>
+    <div class="m-pa">
+      <div class="m-mark">PA<i></i></div>
+      <div class="m-mark">RADIO<i></i></div>
+    </div>
+
+    <div class="knob k-mode" id="mode"><div class="slot"></div><div class="dot"></div></div>
+  </div>
+  <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+</div>
+
+<div class="big-row">
+  <button class="big" id="btnMan">MAN</button>
+  <button class="big" id="btnHorn">HORN</button>
+</div>
+<div class="stat" id="disp-status"></div>
+
 <audio id="snd-short" src="short.mp3" preload="auto"></audio>
 <audio id="snd-horn"  src="horn.wav"  preload="auto"></audio>
 <audio id="snd-wail"  src="wail.wav"  preload="auto"></audio>
 <audio id="snd-yelp"  src="yelp.mp3"  preload="auto"></audio>
 <audio id="snd-hilo"  src="hilo.wav"  preload="auto"></audio>
-
-
-<div class="unit">
-  <div class="ear l"></div>
-  <div class="case">
-    <div class="face">
-      <svg class="lines" viewBox="0 0 330 248" fill="none"><path d="M 8 6 H 322 V 242 H 254 V 168 H 186 V 242 H 8 Z" stroke="#e2c65e" stroke-width="2.6" stroke-linejoin="round"/></svg>
-      <div class="knob k-vol" id="vol"><div class="k-gear" style="transform:rotate(-15deg)"><div class="k-top"></div></div></div>
-      <div class="d d-off" id="led-off"></div>
-      <div class="t t-off">OFF/VOL</div>
-      <div class="rj"><div class="rj-top"><div class="rj-pins"></div></div><div class="rj-red"></div></div>
-      <div class="t t-hilo">HILO</div><div class="d d-hilo" id="led-hilo"></div>
-      <div class="t t-yelp">YELP</div><div class="d d-yelp" id="led-yelp"></div>
-      <div class="t t-wail">WAIL</div><div class="d d-wail" id="led-wail"></div>
-      <div class="t t-stby">STANDBY</div><div class="d d-stby" id="led-stby"></div>
-      <div class="badge"><span>PREMIER</span><span>HAZARD</span></div>
-<div class="num">7007</div>
-      <div class="knob k-mode" id="mode"><div class="k-gear" style="transform:rotate(14deg)"><div class="k-top"></div></div></div>
-      <div class="d d-pa" id="led-pa"></div><div class="d d-rad" id="led-rad"></div>
-      <div class="t t-pa">PA</div><div class="t t-rad">RADIO</div>
-      <div class="t t-man">MAN</div>
-<div class="b-slot s-man"><button class="btn" id="btnMan"></button></div>
-      <div class="t t-horn">HORN</div>
-      <div class="b-slot s-horn"><button class="btn" id="btnHorn"></button></div>
-    </div>
-  </div>
-  <div class="ear r"></div>
-</div>
-
-<script>
 (() => {
   const $ = (id) => document.getElementById(id);
   const angles = [115, 90, 65, 40, 14, -14];
   const modeLeds = ['led-hilo', 'led-yelp', 'led-wail', 'led-stby', 'led-pa', 'led-rad'];
-  let modeIndex = 4; // PA при запуске
+  let modeIndex = 4; // PA ��� �������
   let powerOn = false;
   const sounds = {
     short: $('snd-short'),
@@ -107,7 +145,7 @@
     yelp: $('snd-yelp'),
     hilo: $('snd-hilo')
   };
-  // Сирены (wail/yelp/hilo) звучат циклично, пока включён режим
+  // ������ (wail/yelp/hilo) ������ ��������, ���� ������� �����
   let sirenAudio = null;
 
   function stopSiren() {
@@ -126,7 +164,7 @@
     s.volume = 1;
     s.currentTime = 0;
     sirenAudio = s;
-    s.play().catch(err => console.warn('Не удалось сыграть сирену:', err));
+    s.play().catch(err => console.warn('�� ������� ������� ������:', err));
   }
 
   function playHold(name) {
@@ -135,7 +173,7 @@
     s.loop = true;
     s.volume = 1;
     s.currentTime = 0;
-    s.play().catch(err => console.warn('Не удалось сыграть ' + name + ':', err));
+    s.play().catch(err => console.warn('�� ������� ������� ' + name + ':', err));
   }
 
   function stopHold(name) {
@@ -145,18 +183,29 @@
     s.currentTime = 0;
   }
   let audioContext = null;
+  let trillTimer = null;
+  let trillOsc = null;
+  let trillGain = null;
 
   function vibrate(ms = 20) {
     if (navigator.vibrate) navigator.vibrate(ms);
   }
 
   function stopTrill() {
-    // Остановка аудио-цепочки трели (без JS-таймеров)
-    trillNodes.forEach(node => { try { node.stop && node.stop(); node.disconnect(); } catch (e) {} });
-    trillNodes = [];
+    if (trillTimer) {
+      clearInterval(trillTimer);
+      trillTimer = null;
+    }
+    if (trillGain && audioContext) {
+      try { trillGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.015); } catch (e) {}
+    }
+    if (trillOsc) {
+      try { trillOsc.stop(); } catch (e) {}
+      trillOsc = null;
+    }
+    trillGain = null;
   }
 
-  const trillNodes = [];
   async function startTrill() {
     stopTrill();
     try {
@@ -165,46 +214,38 @@
       audioContext = audioContext || new AudioCtx();
       if (audioContext.state === 'suspended') await audioContext.resume();
 
-      // Основа: меандр с биением частоты (вобуляция вместо setInterval)
       const osc = audioContext.createOscillator();
-      osc.type = 'square';
-      osc.frequency.value = 800;
-      // Медленный меандр модулирует частоту основного тона: 680 <-> 920
-      const freqLfo = audioContext.createOscillator();
-      freqLfo.type = 'square';
-      freqLfo.frequency.value = 2.17;
-      const freqDepth = audioContext.createGain();
-      freqDepth.gain.value = 120;
-      freqLfo.connect(freqDepth);
-      freqDepth.connect(osc.frequency);
-
-      // Быстрый меандр (трель ~4.3 Гц) модулирует громкость
-      const gate = audioContext.createGain();
-      gate.gain.value = 0.07;
-      const gateLfo = audioContext.createOscillator();
-      gateLfo.type = 'square';
-      gateLfo.frequency.value = 4.35;
-      const gateDepth = audioContext.createGain();
-      gateDepth.gain.value = 0.06;
-      gateLfo.connect(gateDepth);
-      gateDepth.connect(gate.gain);
-
+      const gain = audioContext.createGain();
       const filter = audioContext.createBiquadFilter();
+      osc.type = 'square';
+      osc.frequency.value = 760;
       filter.type = 'lowpass';
       filter.frequency.value = 1800;
-
+      gain.gain.value = 0;
       osc.connect(filter);
-      filter.connect(gate);
-      gate.connect(audioContext.destination);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start();
+      trillOsc = osc;
+      trillGain = gain;
 
-      osc.start(); freqLfo.start(); gateLfo.start();
-      trillNodes.push(osc, freqLfo, gateLfo, freqDepth, gateDepth, filter, gate);
+      let phase = false;
+      const pulse = () => {
+        if (!trillGain || !audioContext) return;
+        phase = !phase;
+        const now = audioContext.currentTime;
+        trillGain.gain.cancelScheduledValues(now);
+        trillGain.gain.setTargetAtTime(phase ? 0.13 : 0.008, now, 0.008);
+        if (trillOsc) trillOsc.frequency.setTargetAtTime(phase ? 920 : 680, now, 0.012);
+      };
+      pulse();
+      trillTimer = setInterval(pulse, 115);
     } catch (err) {
-      console.warn('Не удалось запустить звук PA:', err);
+      console.warn('�� ������� ��������� ���� PA:', err);
     }
   }
 
-  // ===== PA: живой микрофон с эффектом рупора =====
+  // ===== PA: ����� �������� � �������� ������ =====
   let micStream = null;
   let micNodes = [];
 
@@ -248,7 +289,7 @@
       g.connect(delay); delay.connect(echo); echo.connect(audioContext.destination);
       micNodes = [source, hp, peak, lp, shaper, g, delay, echo];
     } catch (err) {
-      // Микрофона нет — оставляем синтезированную трель как запасной вариант
+      // ��������� ��� � ��������� ��������������� ����� ��� �������� �������
       startTrill();
     }
   }
@@ -262,7 +303,7 @@
     }
   }
 
-  // ===== RADIO: шум эфира =====
+  // ===== RADIO: ��� ����� =====
   let radioNodes = [];
 
   function startRadio() {
@@ -271,7 +312,7 @@
       audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
       if (audioContext.state === 'suspended') audioContext.resume();
 
-      // Белый шум
+      // ����� ���
       const len = audioContext.sampleRate * 2;
       const buf = audioContext.createBuffer(1, len, audioContext.sampleRate);
       const data = buf.getChannelData(0);
@@ -292,7 +333,7 @@
       const g = audioContext.createGain();
       g.gain.value = 0.07;
 
-      // «Переменная tuning»: медленное блуждание частоты
+      // ����������� tuning�: ��������� ��������� �������
       const lfo = audioContext.createOscillator();
       lfo.frequency.value = 0.17;
       const lfoGain = audioContext.createGain();
@@ -304,7 +345,7 @@
       src.start(); lfo.start();
       radioNodes = [src, lfo, lfoGain, band, hiss, g];
     } catch (err) {
-      console.warn('Не удалось запустить шум радио:', err);
+      console.warn('�� ������� ��������� ��� �����:', err);
     }
   }
 
@@ -313,7 +354,7 @@
     radioNodes = [];
   }
 
-  // ===== HORN: непрерывный звук без паузы — Web Audio с обрезкой тишины в хвосте =====
+  // ===== HORN: ����������� ���� ��� ����� � Web Audio � �������� ������ � ������ =====
   let hornCtx = null, hornBuffer = null, hornSrcNode = null, hornGainNode = null;
 
   function hornTrimEnd(buf) {
@@ -335,7 +376,7 @@
       const arr = await res.arrayBuffer();
       hornBuffer = await hornCtx.decodeAudioData(arr);
     } catch (e) {
-      hornCtx = false; // файл недоступен — fallback на <audio>
+      hornCtx = false; // ���� ���������� � fallback �� <audio>
     }
     return hornBuffer;
   }
@@ -356,7 +397,7 @@
       hornSrcNode = src;
       return;
     }
-    playHold('horn'); // запасной вариант
+    playHold('horn'); // �������� �������
   }
 
   function stopHornContinuous() {
@@ -368,13 +409,13 @@
     stopHold('horn');
   }
 
-  // ===== MAN по-настоящему =====
-  // Ручка в PA: MAN = рация — микрофон работает только пока держим.
-  // Ручка в HILO/YELP/WAIL: MAN = ручной тон — отпустил = пауза, нажал = продолжение с того же места.
+  // ===== MAN ��-���������� =====
+  // ����� � PA: MAN = ����� � �������� �������� ������ ���� ������.
+  // ����� � HILO/YELP/WAIL: MAN = ������ ��� � �������� = �����, ����� = ����������� � ���� �� �����.
 
-  let manAudio = null;      // сейчас играет под MAN
-  let manOffset = 0;        // место паузы в сэмпле сирены
-  let manToneKey = null;    // какой тон играл в последний раз
+  let manAudio = null;      // ������ ������ ��� MAN
+  let manOffset = 0;        // ����� ����� � ������ ������
+  let manToneKey = null;    // ����� ��� ����� � ��������� ���
   let manFadeTimer = null;
 
   function fadeTo(s, target, ms, onDone) {
@@ -397,15 +438,15 @@
     if (!powerOn) return;
     stopTrill(); stopSiren(); stopRadio();
 
-    // Ручка в PA → держим MAN = микрофон в эфире
+    // ����� � PA > ������ MAN = �������� � �����
     if (modeIndex === 4) { startPA(); return; }
 
-    // Ручной тон; в PA/RADIO/STANDBY — WAIL
+    // ������ ���; � PA/RADIO/STANDBY � WAIL
     const toneKey = [0, 1, 2].includes(modeIndex) ? ['hilo', 'yelp', 'wail'][modeIndex] : 'wail';
     const s = sounds[toneKey];
     if (!s) return;
 
-    // Смена тона — сбрасываем паузу
+    // ����� ���� � ���������� �����
     if (manToneKey !== toneKey) { manOffset = 0; manToneKey = toneKey; }
 
     if (manAudio && manAudio !== s) {
@@ -415,17 +456,17 @@
     s.volume = 0;
     s.currentTime = (s.duration > 0) ? (manOffset % s.duration) : 0;
     manAudio = s;
-    s.play().catch(err => console.warn('Не удалось сыграть MAN:', err));
-    fadeTo(s, 1, 120); // быстрое нарастание
+    s.play().catch(err => console.warn('�� ������� ������� MAN:', err));
+    fadeTo(s, 1, 120); // ������� ����������
   }
 
   function stopMan() {
-    // Микрофон гасим всегда, если он был запущен под MAN
+    // �������� ����� ������, ���� �� ��� ������� ��� MAN
     stopPA();
     const s = manAudio;
     if (!s) return;
     manAudio = null;
-    // Запоминаем место паузы и гасим
+    // ���������� ����� ����� � �����
     if (s.duration > 0 && isFinite(s.currentTime)) manOffset = s.currentTime;
     fadeTo(s, 0, 150, () => {
       s.pause();
@@ -439,9 +480,9 @@
     if (gear) gear.style.transform = `rotate(${angles[modeIndex]}deg)`;
     stopTrill(); stopSiren(); stopPA(); stopRadio();
     if (!powerOn) return;
-    // PA — режим микрофона: он включается только удержанием MAN. STANDBY — тишина.
+    // PA � ����� ���������: �� ���������� ������ ���������� MAN. STANDBY � ������.
     if (modeIndex === 0 || modeIndex === 1 || modeIndex === 2) startSiren();
-    manOffset = 0; // смена режима — пауза ручного тона сбрасывается
+    manOffset = 0; // ����� ������ � ����� ������� ���� ������������
   }
 
   $('mode').addEventListener('pointerdown', (event) => {
@@ -462,8 +503,8 @@
     else { stopTrill(); stopSiren(); stopPA(); stopRadio(); stopHold('short'); stopHold('horn'); stopMan(); }
   });
 
-  // Механика удержания кнопок — как в пульте ГИБДД: pointer capture,
-  // отдельный «канал» на кнопку, двойное нажатие и «залипание» исключены.
+  // �������� ��������� ������ � ��� � ������ �����: pointer capture,
+  // ��������� ������ �� ������, ������� ������� � ���������� ���������.
   const activePointers = { man: null, horn: null };
 
   function bindMultitouchHold(id, channel, onDown, onUp) {
@@ -511,17 +552,33 @@
     stopHornContinuous();
   });
 
-  // Потеря фокуса окна — всё глохнет, как в ГИБДД
+  // ������ ������ ���� � �� �������, ��� � �����
   window.addEventListener('blur', () => {
     activePointers.man = null; activePointers.horn = null;
     stopMan(); stopHold('horn'); stopTrill(); stopSiren(); stopPA(); stopRadio();
   });
 
-  // Первоначальное положение ручек и индикаторов.
+  // �������������� ��������� ����� � �����������.
   const volGear = document.querySelector('#vol .k-gear');
   if (volGear) volGear.style.transform = 'rotate(-15deg)';
   updateMode();
 })();
+
+// Р‘РµР»С‹Рµ РєР»Р°РІРёС€Рё РЅР° РїР°РЅРµР»Рё РґСѓР±Р»РёСЂСѓСЋС‚ Р±РѕР»СЊС€РёРµ РєРЅРѕРїРєРё MAN/HORN
+document.getElementById('btnAst').addEventListener('pointerdown', () => {
+  if (!powerOn) return;
+  startMan(); vibrate(50);
+}, { passive: false });
+['pointerup','pointercancel','pointerleave'].forEach(ev => {
+  document.getElementById('btnAst').addEventListener(ev, () => stopMan());
+});
+document.getElementById('btnBild').addEventListener('pointerdown', () => {
+  if (!powerOn) return;
+  startHornContinuous(); vibrate(100);
+}, { passive: false });
+['pointerup','pointercancel','pointerleave'].forEach(ev => {
+  document.getElementById('btnBild').addEventListener(ev, () => stopHornContinuous());
+});
 </script>
-<div style="text-align:center;color:#555;font-size:11px;font-weight:700;margin-top:12px">shama&amp;by grek</div></body>
+</body>
 </html>
