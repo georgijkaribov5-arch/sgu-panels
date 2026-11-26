@@ -409,6 +409,26 @@
       .disp-status { font-size: 8.5px; padding: 2px 5px; }
     }
   </style>
+<script>
+(async () => {
+  async function check() {
+    const kh = sessionStorage.getItem('SGU_ACCESS');
+    if (!kh) { location.href = '../login.html'.replace('../', ''); return; }
+    try {
+      const data = await (await fetch('../keys.json?r=' + Date.now())).json();
+      const entry = (data.keys || []).find(x => x.hash === kh);
+      if (!entry) { location.href = '../login.html'; return; }
+      if (entry.deviceHash) {
+        const dev = sessionStorage.getItem('SGU_DEV') || localStorage.getItem('SGU_DEV');
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((dev || '') + '|' + kh));
+        const expect = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+        if (expect !== entry.deviceHash) { sessionStorage.clear(); location.href = '../login.html'; return; }
+      }
+    } catch (e) {}
+  }
+  await check();
+})();
+</script>
 </head>
 <body>
 
