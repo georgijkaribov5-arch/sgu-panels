@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вход — Выбор СГУ</title>
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+html,body{margin:0;width:100%;height:100%;background:#101216;color:#f4f5f7}
+body{display:flex;align-items:center;justify-content:center;padding:22px}
+.card{width:min(420px,100%);background:#171b22;border:1px solid #39414d;border-radius:16px;padding:28px 24px;text-align:center;box-shadow:0 16px 40px #0008}
+h1{margin:0 0 6px;font-size:24px}
+.sub{color:#aeb5c0;font-size:13px;margin:0 0 20px;line-height:1.5}
+input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid #39414d;background:#0f1114;color:#fff;font-size:16px;text-align:center;letter-spacing:2px;outline:none}
+input:focus{border-color:#d5b957}
+.err{color:#ff6b6b;font-size:12px;min-height:16px;margin:8px 0 4px}
+button{width:100%;padding:13px;border-radius:10px;border:none;background:#d5b957;color:#15161a;font-size:14.5px;font-weight:800;cursor:pointer;margin-top:8px}
+button.sec{background:#23272f;color:#e8eaee;font-weight:700;font-size:13px}
+.board{margin:14px 0 0;color:#8b93a0;font-size:12.5px;line-height:1.6;display:none}
+.board b{color:#d5b957}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🔒 СГУ — закрытый доступ</h1>
+  <p class="sub">Введите ключ доступа. Нет ключа — подайте заявку:<br>её примет администратор и выдаст ключ.</p>
+  <input id="key" placeholder="SGU-XXXX-XXXX" autocomplete="off">
+  <div class="err" id="err"></div>
+  <button id="go">ВОЙТИ</button>
+  <button class="sec" id="apply">📨 ПОДАТЬ ЗАЯВКУ НА ДОСТУП</button>
+  <div class="board" id="board">Текст заявки скопирован — отправьте его админу в открывшемся Telegram.</div>
+  <p class="sub" style="margin:16px 0 0;font-size:11px">shama&amp;by grek</p>
+</div>
+<script>
+(() => {
+  function utf8(s){const o=[];for(const ch of s){const c=ch.codePointAt(0);if(c<0x80)o.push(c);else if(c<0x800)o.push(0xC0|(c>>6),0x80|(c&63));else o.push(0xE0|(c>>12),0x80|((c>>6)&63),0x80|(c&63));}return new Uint8Array(o);}
+  function rr(x,n){return (x>>>n)|(x<<(32-n));}
+  function sha256(bytes){
+    const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const len=bytes.length,bitLen=len*8;
+    const p=[...bytes,0x80];
+    while(p.length%64!==56)p.push(0);
+    for(let i=7;i>=0;i--)p.push(Math.floor(bitLen/Math.pow(2,i*8))&255);
+    for(let off=0;off<p.length;off+=64){
+      const w=[];
+      for(let i=0;i<16;i++)w[i]=(p[off+i*4]<<24)|(p[off+i*4+1]<<16)|(p[off+i*4+2]<<8)|p[off+i*4+3];
+      for(let i=16;i<64;i++){
+        const s0=rr(w[i-15],7)^rr(w[i-15],18)^(w[i-15]>>>3);
+        const s1=rr(w[i-2],17)^rr(w[i-2],19)^(w[i-2]>>>10);
+        w[i]=(w[i-16]+s0+w[i-7]+s1)|0;
+      }
+      let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+      for(let i=0;i<64;i++){
+        const S1=rr(e,6)^rr(e,11)^rr(e,25);
+        const ch=(e&f)^(~e&g);
+        const t1=(h+S1+ch+K[i]+w[i])|0;
+        const S0=rr(a,2)^rr(a,13)^rr(a,22);
+        const mj=(a&b)^(a&c)^(b&c);
+        const t2=(S0+mj)|0;
+        h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+      }
+      H=[(H[0]+a)|0,(H[1]+b)|0,(H[2]+c)|0,(H[3]+d)|0,(H[4]+e)|0,(H[5]+f)|0,(H[6]+g)|0,(H[7]+h)|0];
+    }
+    return new Uint8Array(H.map(x=>[(x>>>24)&255,(x>>>16)&255,(x>>>8)&255,x&255]).flat());
+  }
+  function sha256hex(s){return sha256(utf8(s)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+
+  const TG = '@USERNAME';
+  const err = document.getElementById('err');
+
+  async function tryLogin() {
+    const k = document.getElementById('key').value.trim().toUpperCase();
+    if (!k) return;
+    try {
+      const data = await (await fetch('keys.json?r=' + Date.now())).json();
+      const h = sha256hex(k);
+      const found = (data.keys || []).find(x => x.hash === h);
+      if (found) {
+        localStorage.setItem('SGU_ACCESS', h);
+        location.href = 'index.html';
+      } else {
+        err.innerText = 'Ключ не найден или отклонён.';
+      }
+    } catch (e) {
+      err.innerText = 'Не удалось проверить ключ.';
+    }
+  }
+  document.getElementById('go').addEventListener('click', tryLogin);
+  document.getElementById('key').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  document.getElementById('apply').addEventListener('click', () => {
+    const text = ['Заявка на доступ к СГУ пультам (shama&by grek)', 'Имя:', 'Откуда:', 'Комментарий:'].join('\n');
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+    document.getElementById('board').style.display = 'block';
+    window.open('https://t.me/' + TG.replace('@', ''), '_blank');
+  });
+})();
+</script>
+</body>
+</html>
