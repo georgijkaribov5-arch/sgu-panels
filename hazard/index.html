@@ -82,6 +82,26 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center;pad
 .big:active,.big.pressed{transform:translateY(3px);box-shadow:0 3px 8px rgba(0,0,0,.5);background:#2e3138}
 .stat{text-align:center;font-size:10px;font-weight:700;color:#555;margin-top:12px;letter-spacing:.4px;height:14px}
 </style>
+<script>
+(async () => {
+  async function check() {
+    const kh = sessionStorage.getItem('SGU_ACCESS');
+    if (!kh) { location.href = '../login.html'.replace('../', ''); return; }
+    try {
+      const data = await (await fetch('../keys.json?r=' + Date.now())).json();
+      const entry = (data.keys || []).find(x => x.hash === kh);
+      if (!entry) { location.href = '../login.html'; return; }
+      if (entry.deviceHash) {
+        const dev = sessionStorage.getItem('SGU_DEV') || localStorage.getItem('SGU_DEV');
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((dev || '') + '|' + kh));
+        const expect = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+        if (expect !== entry.deviceHash) { sessionStorage.clear(); location.href = '../login.html'; return; }
+      }
+    } catch (e) {}
+  }
+  await check();
+})();
+</script>
 </head>
 <body>
 
