@@ -1,399 +1,380 @@
-<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>СГУ К-13</title>
+<title>Пульт СГУ K-13</title>
 <style>
-/* Точная копия фото «сфотографировали сверху»: синяя ткань-фон, тёмная панель, 6 чёрных клавиш 2×3 */
-*{box-sizing:border-box;user-select:none;-webkit-user-select:none;touch-action:manipulation;font-family:Arial,sans-serif}
-body{
-  margin:0;min-height:100vh;min-height:100dvh;
-  display:flex;align-items:center;justify-content:center;padding:12px;
-  /* Синяя ткань вокруг, как на фото */
-  background:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/3px 3px,
-             linear-gradient(160deg,#2f57a8 0%,#24447f 55%,#1b3465 100%);
-  background-blend-mode:normal;
-}
-.panel{
-  position:relative;
-  width:min(580px,100%);
-  background:linear-gradient(180deg,#232529 0%,#1a1c20 100%);
-  border-radius:8px;
-  padding:26px 24px 30px;
-  box-shadow:0 14px 30px rgba(0,0,0,.6);
-}
-.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:66%}
-.key{
-  aspect-ratio:1.5/1;
-  border:none;border-radius:7px;cursor:pointer;
-  background:linear-gradient(160deg,#3b3e45 0%,#1a1c20 70%,#0b0c0e 100%);
-  box-shadow:0 3px 6px rgba(0,0,0,.65), inset 0 1px 1px rgba(255,255,255,.16), inset 0 -2px 4px rgba(0,0,0,.7);
-  transition:transform .04s, box-shadow .04s;
-}
-.key:active,.key.pressed{transform:translateY(2px);box-shadow:0 1px 2px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.1)}
-.cap{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:66%;
-  margin:10px 0 8px;text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.8px;color:#f2f2f2;
-}
-.gline{max-width:66%;border-top:1.5px solid #e0c060;margin:4px 0 8px}
-.cap2{max-width:66%;margin-top:0}
-.cap1{margin-bottom:8px}
-.k13{
-  position:absolute;top:24px;right:26px;
-  color:#eecc55;font-weight:800;font-size:27px;letter-spacing:1px;
-}
-.emblem{position:absolute;bottom:34px;right:26px;width:74px;height:74px;border-radius:50%;
-  border:3px solid #eecc55;background:#141414;display:flex;align-items:center;justify-content:center}
-.vol-row{display:flex;align-items:center;gap:8px;margin-top:18px;max-width:66%;font-size:10px;font-weight:700;color:#8b8f96}
-.vol-row input[type=range]{flex:1;accent-color:#eecc55;height:3px}
-.stat{max-width:66%;margin-top:14px;font-size:9.5px;font-weight:700;color:#6d7178;letter-spacing:.4px}
-@media(max-width:520px){
-  .panel{padding:18px 14px 22px}
-  .keys,.cap,.gline,.vol-row,.stat{max-width:60%}
-  .k13{font-size:20px;top:16px;right:14px}
-  .emblem{width:54px;height:54px;bottom:22px;right:14px}
-}
-</style>
-<script>
-(async () => {
-  async function check() {
-    const kh = sessionStorage.getItem('SGU_ACCESS');
-    if (!kh) { location.href = '../login.html'.replace('../', ''); return; }
-    try {
-      const data = await (await fetch('../keys.json?r=' + Date.now())).json();
-      const entry = (data.keys || []).find(x => x.hash === kh);
-      if (!entry) { location.href = '../login.html'; return; }
-      if (entry.deviceHash) {
-        const dev = sessionStorage.getItem('SGU_DEV') || localStorage.getItem('SGU_DEV');
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((dev || '') + '|' + kh));
-        const expect = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
-        if (expect !== entry.deviceHash) { sessionStorage.clear(); location.href = '../login.html'; return; }
-      }
-    } catch (e) {}
+  * {
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
-  await check();
-})();
-</script>
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 45%, #242731 0%, #0f1015 100%);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* Внешний контейнер пульта с боковыми ушками */
+  .k13-container {
+    position: relative;
+    width: 92vw;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Боковые монтажные проушины как на оригинале */
+  .side-ear {
+    position: absolute;
+    width: 10px;
+    height: 30px;
+    background: #111216;
+    border: 1px solid #353841;
+    z-index: 1;
+  }
+  .ear-1 { left: -8px; top: 15%; border-radius: 4px 0 0 4px; }
+  .ear-2 { left: -8px; bottom: 15%; border-radius: 4px 0 0 4px; }
+  .ear-3 { right: -8px; top: 15%; border-radius: 0 4px 4px 0; }
+  .ear-4 { right: -8px; bottom: 15%; border-radius: 0 4px 4px 0; }
+
+  /* Нижний разъём/переключатель на торце */
+  .bottom-connector {
+    position: absolute;
+    bottom: -6px;
+    right: 22%;
+    width: 42px;
+    height: 7px;
+    background: linear-gradient(90deg, #090a0c, #4b4f59 50%, #090a0c);
+    border: 1px solid #606570;
+    border-radius: 0 0 3px 3px;
+    z-index: 1;
+  }
+
+  /* Корпус пульта K-13 с зернистой шагренью */
+  .k13-body {
+    position: relative;
+    width: 100%;
+    padding: 14px 12px;
+    border-radius: 8px;
+    background-color: #2b2d32;
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.16) 0.9px, transparent 0.9px),
+      radial-gradient(rgba(0, 0, 0, 0.55) 1px, transparent 1px),
+      linear-gradient(180deg, #3a3d45 0%, #26282e 55%, #191a1e 100%);
+    background-size: 5px 5px, 4px 4px, 100% 100%;
+    background-position: 0 0, 2px 2px, 0 0;
+    border-top: 2px solid #5d616b;
+    border-left: 2px solid #43464f;
+    border-right: 2px solid #1d1f24;
+    border-bottom: 6px solid #0d0e11;
+    box-shadow: 0 22px 45px rgba(0, 0, 0, 0.92);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    z-index: 2;
+  }
+
+  /* Тонкая золотая разделительная линия через весь корпус */
+  .gold-stripe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1.5px;
+    margin-top: -1px;
+    background: linear-gradient(90deg, #c7b05e 0%, #f3df8d 50%, #bda44f 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* Левая секция с 6 кнопками (66% ширины корпуса) */
+  .keys-section {
+    width: 66%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 4;
+  }
+
+  .keys-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Физическая кнопка K-13 с широкой рамкой и выпуклой серединой */
+  .k13-btn {
+    width: 31%;
+    height: 62px;
+    border: none;
+    border-radius: 4px;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+    background: linear-gradient(165deg, #282a30 0%, #141518 65%, #0b0c0e 100%);
+    box-shadow:
+      0 5px 0 #060708,
+      0 7px 10px rgba(0, 0, 0, 0.85),
+      inset 0 1px 1px rgba(255, 255, 255, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.04s ease, box-shadow 0.04s ease;
+  }
+
+  .k13-btn-inner {
+    width: 64%;
+    height: 62%;
+    border-radius: 2.5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid rgba(0, 0, 0, 0.8);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.9);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+  }
+
+  /* Состояние физического нажатия */
+  .k13-btn:active,
+  .k13-btn.pressed {
+    transform: translateY(4px);
+    box-shadow:
+      0 1px 0 #060708,
+      0 2px 4px rgba(0, 0, 0, 0.9),
+      inset 0 2px 6px #000000;
+  }
+
+  .k13-btn:active .k13-btn-inner,
+  .k13-btn.pressed .k13-btn-inner {
+    transform: scale(0.96);
+    background: linear-gradient(170deg, #26282e 0%, #151619 100%);
+  }
+
+  /* Фиксация активного режима (SIREN / PULSAR) */
+  .k13-btn.latched {
+    transform: translateY(3px);
+    box-shadow:
+      0 2px 0 #060708,
+      0 0 11px rgba(250, 204, 21, 0.55),
+      inset 0 1px 4px rgba(250, 204, 21, 0.35);
+  }
+
+  .k13-btn.latched .k13-btn-inner {
+    border-top-color: #fde047;
+  }
+
+  /* Блок надписей над и под золотой линией */
+  .labels-block {
+    margin: 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .labels-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .lbl-item {
+    width: 31%;
+    text-align: center;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-weight: 900;
+    font-size: 9.5px;
+    letter-spacing: 0.2px;
+    color: #f3f4f6;
+    text-shadow: 0 1px 2px #000000;
+    white-space: nowrap;
+  }
+
+  /* Правая секция: надпись K-13 и золотой герб (31% ширины корпуса) */
+  .brand-section {
+    width: 31%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 4;
+    padding: 2px 0;
+  }
+
+  .k13-heading {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: -1px;
+    color: #f8fafc;
+    line-height: 1;
+    margin-top: 4px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95);
+    white-space: nowrap;
+  }
+
+  /* Золотой круглый герб с башней */
+  .crest-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fef08a 0%, #d4af37 45%, #8a6d1b 85%, #42330a 100%);
+    border: 2px solid #fef08a;
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.85),
+      inset 0 0 0 2.5px #5c460c,
+      inset 0 0 0 4.5px #facc15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .crest-ring {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2.5px dotted #fef9c3;
+    background: radial-gradient(circle, #9e7b1c 0%, #5c4509 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .crest-center {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid #fef08a;
+    background: #7c5e10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .t-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #fef9c3;
+    margin-bottom: 1px;
+  }
+
+  .t-roof {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 5px solid #fef9c3;
+  }
+
+  .t-wall {
+    width: 11px;
+    height: 18px;
+    background: linear-gradient(180deg, #fef9c3 0%, #eab308 100%);
+    border-left: 1px solid #42330a;
+    border-right: 1px solid #42330a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
+  .t-win {
+    width: 3px;
+    height: 3.5px;
+    background: #5c4509;
+  }
+
+  .info-bar {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+  }
+  .info-bar b {
+    color: #facc15;
+  }
+</style>
 </head>
 <body>
-<div class="panel">
-  <div class="k13">К-13</div>
-  <div class="keys">
-    <button class="key" id="btn-short" title="SHORT"></button>
-    <button class="key" id="btn-horn" title="HORN"></button>
-    <button class="key" id="btn-pulsar" title="PULSAR"></button>
+    <div class="side-ear ear-1"></div>
+    <div class="side-ear ear-2"></div>
+    <div class="side-ear ear-3"></div>
+    <div class="side-ear ear-4"></div>
+    <div class="bottom-connector"></div>
+
+    <div class="k13-body">
+      <div class="gold-stripe"></div>
+
+      <!-- Левая часть с 6 кнопками и надписями -->
+      <div class="keys-section">
+        <div class="keys-row">
+          <button class="k13-btn" id="btn-short" type="button"><div class="k13-btn-inner"></div></button>
+          <button class="k13-btn" id="btn-horn" type="button"><div class="k13-btn-inner"></div></button>
+          <button class="k13-btn" id="btn-pulsar" type="button"><div class="k13-btn-inner"></div></button>
+        </div>
+
+        <div class="labels-block">
+          <div class="labels-line">
+            <div class="lbl-item">SHORT</div>
+            <div class="lbl-item">HORN</div>
+            <div class="lbl-item">PULSAR</div>
+          </div>
+          <div class="labels-line">
+            <div class="lbl-item">SIREN</div>
+            <div class="lbl-item">MANUAL</div>
+            <div class="lbl-item">MODE</div>
+          </div>
+        </div>
+
+        <div class="keys-row">
+          <button class="k13-btn" id="btn-siren" type="button"><div class="k13-btn-inner"></div></button>
+          <button class="k13-btn" id="btn-manual" type="button"><div class="k13-btn-inner"></div></button>
+          <button class="k13-btn" id="btn-mode" type="button"><div class="k13-btn-inner"></div></button>
+        </div>
+      </div>
+
+      <!-- Правая часть: надпись K-13 и герб -->
+      <div class="brand-section">
+        <div class="k13-heading">K-13</div>
+
+        <div class="crest-circle">
+          <div class="crest-ring">
+            <div class="crest-center">
+              <div class="t-dot"></div>
+              <div class="t-roof"></div>
+              <div class="t-wall">
+                <div class="t-win"></div>
+                <div class="t-win"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="cap cap1"><span>SHORT</span><span>HORN</span><span>PULSAR</span></div>
-  <div class="gline"></div>
-  <div class="cap cap2"><span>SIREN</span><span>MANUAL</span><span>MODE</span></div>
-  <div class="keys">
-    <button class="key" id="btn-siren" title="SIREN"></button>
-    <button class="key" id="btn-manual" title="MANUAL"></button>
-    <button class="key" id="btn-mode" title="MODE"></button>
+
+  <div class="info-bar">
+    Режим: <b id="tone-text">WAIL</b> | Статус: <b id="status-text">Готов</b>
   </div>
-  <div class="vol-row">
-    <span>VOL</span>
-    <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.9" oninput="setMasterVolume(this.value)">
-    <span id="vol-label">90</span>
-  </div>
-  <div class="stat" id="disp-status">ЗАГРУЗКА...</div>
-  <div class="emblem">
-    <svg width="46" height="46" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="26" fill="none" stroke="#c9a93e" stroke-width="2"/>
-      <path d="M32 14L36.5 27H50L39 35L43 48L32 40L21 48L25 35L14 27H27.5Z" fill="#eecc55"/>
-    </svg>
-  </div>
-</div>
 
-<script>// ===== Тоны и состояния =====
-const MODES = ['wail', 'yelp', 'hilo'];
-let modeIdx = 0;
-let sirenOn = false;
-let masterVol = 0.9;
-
-let audioCtx = null, sirenGain = null, boostGain = null, limiter = null;
-const rawBuffers = {}, decodedBuffers = {};
-
-const activePointers = { short: null, horn: null, pulsar: null, manual: null };
-const activeSources  = { short: null, horn: null, pulsar: null, manual: null };
-let sirenSource = null;
-let manualOffset = 0, manualStartTime = 0, manualPlaying = false;
-
-function unlockAudio() {
-  if (!audioCtx) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    audioCtx = new AC();
-    limiter = audioCtx.createDynamicsCompressor();
-    limiter.threshold.value = -3; limiter.knee.value = 6; limiter.ratio.value = 12;
-    limiter.attack.value = 0.002; limiter.release.value = 0.08;
-    limiter.connect(audioCtx.destination);
-    sirenGain = audioCtx.createGain(); sirenGain.gain.value = masterVol; sirenGain.connect(limiter);
-    boostGain = audioCtx.createGain(); boostGain.gain.value = masterVol * 2.65; boostGain.connect(limiter);
-  }
-  if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-}
-
-function decodeAudioSafe(arrayBuf) {
-  return new Promise((resolve, reject) => {
-    if (!audioCtx) return reject(new Error('no ctx'));
-    const copy = arrayBuf.slice(0);
-    const res = audioCtx.decodeAudioData(copy, resolve, reject);
-    if (res && res.then) res.then(resolve).catch(reject);
-  });
-}
-
-async function getBuffer(key) {
-  if (decodedBuffers[key]) return decodedBuffers[key];
-  if (!rawBuffers[key] || !audioCtx) return null;
-  try { decodedBuffers[key] = await decodeAudioSafe(rawBuffers[key]); return decodedBuffers[key]; }
-  catch (e) { return null; }
-}
-
-// Усечение «хвоста тишины» в сэмпле — для непрерывного лупа без паузы
-function trimEnd(buf) {
-  const ch = buf.getChannelData(0);
-  const thr = 0.005;
-  let end = ch.length - 1;
-  for (let i = ch.length - 1; i > 0; i--) {
-    if (Math.abs(ch[i]) > thr) { end = i; break; }
-  }
-  return Math.min(buf.duration, end / buf.sampleRate + 0.01);
-}
-
-// ===== Офлайн-кэш IndexedDB (как в ГИБДД) =====
-function openDB() {
-  return new Promise((resolve) => {
-    try {
-      if (!window.indexedDB) return resolve(null);
-      const req = indexedDB.open('SGU_K13_OFFLINE', 1);
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('sounds')) db.createObjectStore('sounds');
-      };
-      req.onsuccess = (e) => resolve(e.target.result);
-      req.onerror = () => resolve(null);
-    } catch (e) { resolve(null); }
-  });
-}
-async function saveToDB(key, buf) {
-  const db = await openDB(); if (!db) return;
-  return new Promise((res) => {
-    try {
-      const tx = db.transaction('sounds', 'readwrite');
-      tx.objectStore('sounds').put(buf.slice(0), key);
-      tx.oncomplete = () => res(); tx.onerror = () => res();
-    } catch (e) { res(); }
-  });
-}
-async function loadFromDB(key) {
-  const db = await openDB(); if (!db) return null;
-  return new Promise((res) => {
-    try {
-      const req = db.transaction('sounds', 'readonly').objectStore('sounds').get(key);
-      req.onsuccess = () => res(req.result || null); req.onerror = () => res(null);
-    } catch (e) { res(null); }
-  });
-}
-
-const SOUND_KEYS = ['short', 'horn', 'wail', 'yelp', 'hilo'];
-async function initSounds() {
-  const exts = ['mp3', 'wav', 'ogg', 'm4a'];
-  await Promise.all(SOUND_KEYS.map(async (key) => {
-    const cached = await loadFromDB(key);
-    if (cached) { rawBuffers[key] = cached; return; }
-    for (const ext of exts) {
-      try {
-        const res = await fetch(key + '.' + ext);
-        if (!res.ok) continue;
-        const ctype = res.headers.get('content-type') || '';
-        if (ctype.includes('text/html')) continue;
-        const arr = await res.arrayBuffer();
-        if (arr && arr.byteLength > 100) { rawBuffers[key] = arr; await saveToDB(key, arr); return; }
-      } catch (e) {}
-    }
-  }));
-  updateStatus();
-}
-
-function updateStatus(custom, cls) {
-  const el = document.getElementById('disp-status');
-  if (custom) { el.innerText = custom; el.className = 'sub-row ' + (cls || ''); return; }
-  const n = SOUND_KEYS.filter(k => rawBuffers[k] || decodedBuffers[k]).length;
-  el.innerText = 'ОФЛАЙН: ' + n + '/5 ГОТОВО';
-}
-
-function setMasterVolume(v) {
-  masterVol = parseFloat(v);
-  document.getElementById('vol-label').innerText = Math.round(masterVol * 100) + '%';
-  if (sirenGain && audioCtx) {
-    sirenGain.gain.setTargetAtTime(masterVol, audioCtx.currentTime, 0.02);
-    boostGain.gain.setTargetAtTime(masterVol * 2.65, audioCtx.currentTime, 0.02);
-  }
-}
-
-// ===== Кнопки-удержания (SHORT/HORN/PULSAR/MANUAL) — механика из ГИБДД =====
-async function startHold(channel, bufKey, btn) {
-  unlockAudio();
-  btn.classList.add('pressed', 'on-red');
-  if (activeSources[channel]) {
-    try { activeSources[channel].stop(); activeSources[channel].disconnect(); } catch (e) {}
-    activeSources[channel] = null;
-  }
-  const buf = await getBuffer(bufKey);
-  if (!buf || activePointers[channel] === null) { if (!buf) updateStatus('НЕТ ФАЙЛА ' + bufKey.toUpperCase(), 'warn'); return; }
-  const src = audioCtx.createBufferSource();
-  src.buffer = buf;
-  src.loop = true;
-  if (channel !== 'manual') {
-    // Хвост тишины обрезаем — звук непрерывный, без «паузы» между кругами
-    try { src.loopEnd = trimEnd(buf); } catch (e) {}
-  }
-  src.connect(boostGain);
-  src.start(0);
-  activeSources[channel] = src;
-}
-
-function stopHold(channel, btn) {
-  btn.classList.remove('pressed', 'on-red');
-  if (activeSources[channel]) {
-    try { activeSources[channel].stop(); activeSources[channel].disconnect(); } catch (e) {}
-    activeSources[channel] = null;
-  }
-}
-
-// MANUAL: удержание с продолжением с места паузы (как в Hazard)
-async function startManual(btn) {
-  unlockAudio();
-  btn.classList.add('pressed', 'on-red');
-  if (sirenOn) forceStopSirenOnly();
-  if (activeSources.manual) {
-    try { activeSources.manual.stop(); activeSources.manual.disconnect(); } catch (e) {}
-    activeSources.manual = null;
-  }
-  const toneKey = MODES[modeIdx];
-  const buf = await getBuffer(toneKey);
-  if (!buf || activePointers.manual === null) return;
-  const off = (buf.duration > 0) ? (manualOffset % buf.duration) : 0;
-  const src = audioCtx.createBufferSource();
-  src.buffer = buf; src.loop = true; src.connect(boostGain);
-  src.start(0, off);
-  activeSources.manual = src;
-  manualStartTime = audioCtx.currentTime;
-  manualPlaying = true;
-}
-
-function stopManual(btn) {
-  btn.classList.remove('pressed', 'on-red');
-  if (manualPlaying && audioCtx) {
-    const elapsed = audioCtx.currentTime - manualStartTime;
-    const buf = decodedBuffers[MODES[modeIdx]];
-    if (buf && buf.duration > 0) manualOffset = (manualOffset + elapsed) % buf.duration;
-    manualPlaying = false;
-  }
-  if (activeSources.manual) {
-    try { activeSources.manual.stop(); activeSources.manual.disconnect(); } catch (e) {}
-    activeSources.manual = null;
-  }
-}
-
-// ===== SIREN и MODE =====
-async function startSirenLoop() {
-  if (sirenSource) { try { sirenSource.stop(); sirenSource.disconnect(); } catch (e) {} sirenSource = null; }
-  const tone = MODES[modeIdx];
-  const buf = await getBuffer(tone);
-  if (!buf || !sirenOn) return;
-  const src = audioCtx.createBufferSource();
-  src.buffer = buf; src.loop = true; src.connect(sirenGain);
-  src.start(0);
-  sirenSource = src;
-}
-
-function forceStopSirenOnly() {
-  sirenOn = false;
-  document.getElementById('btn-siren').classList.remove('on-red');
-  if (sirenSource) { try { sirenSource.stop(); sirenSource.disconnect(); } catch (e) {} sirenSource = null; }
-}
-
-function toggleSiren() {
-  unlockAudio();
-  sirenOn = !sirenOn;
-  const btn = document.getElementById('btn-siren');
-  if (sirenOn) { btn.classList.add('on-red'); startSirenLoop(); }
-  else { forceStopSirenOnly(); updateStatus(); }
-}
-
-function cycleMode() {
-  unlockAudio();
-  modeIdx = (modeIdx + 1) % MODES.length;
-  const btn = document.getElementById('btn-mode');
-  btn.classList.remove('on-blue'); void btn.offsetWidth; btn.classList.add('on-blue');
-  manualOffset = 0;
-  if (manualPlaying) startManual(document.getElementById('btn-manual'));
-  if (sirenOn) startSirenLoop();
-}
-
-// ===== Pointer-механика из ГИБДД =====
-function bindMultitouchHold(id, channel, onDown, onUp) {
-  const btn = document.getElementById(id);
-  btn.addEventListener('pointerdown', (e) => {
-    e.preventDefault(); e.stopPropagation();
-    if (activePointers[channel] !== null) return;
-    activePointers[channel] = e.pointerId;
-    if (btn.setPointerCapture) { try { btn.setPointerCapture(e.pointerId); } catch (err) {} }
-    onDown(btn);
-  });
-  const release = (e) => {
-    if (activePointers[channel] !== e.pointerId) return;
-    e.preventDefault(); e.stopPropagation();
-    activePointers[channel] = null;
-    onUp(btn);
-  };
-  btn.addEventListener('pointerup', release);
-  btn.addEventListener('pointercancel', release);
-}
-
-function bindStrictTap(id, action) {
-  const btn = document.getElementById(id);
-  let tapPointer = null;
-  btn.addEventListener('pointerdown', (e) => {
-    e.preventDefault(); e.stopPropagation();
-    if (tapPointer !== null) return;
-    tapPointer = e.pointerId;
-    btn.classList.add('pressed');
-    if (btn.setPointerCapture) { try { btn.setPointerCapture(e.pointerId); } catch (err) {} }
-    action();
-  });
-  const endTap = (e) => {
-    if (tapPointer !== e.pointerId) return;
-    tapPointer = null;
-    btn.classList.remove('pressed');
-  };
-  btn.addEventListener('pointerup', endTap);
-  btn.addEventListener('pointercancel', endTap);
-}
-
-bindMultitouchHold('btn-short', 'short', (b) => startHold('short', 'short', b), (b) => stopHold('short', b));
-bindMultitouchHold('btn-horn', 'horn', (b) => startHold('horn', 'horn', b), (b) => stopHold('horn', b));
-// PULSAR — двухтоновый сигнал «ва-ва» (hi-lo), удержание, непрерывно
-bindMultitouchHold('btn-pulsar', 'pulsar', (b) => startHold('pulsar', 'hilo', b), (b) => stopHold('pulsar', b));
-bindMultitouchHold('btn-manual', 'manual', (b) => startManual(b), (b) => stopManual(b));
-
-bindStrictTap('btn-siren', toggleSiren);
-bindStrictTap('btn-mode', cycleMode);
-
-window.addEventListener('blur', () => {
-  ['short', 'horn', 'pulsar', 'manual'].forEach(ch => {
-    if (activeSources[ch]) { try { activeSources[ch].stop(); activeSources[ch].disconnect(); } catch (e) {} activeSources[ch] = null; }
-    activePointers[ch] = null;
-  });
-  const mb = document.getElementById('btn-manual');
-  stopManual(mb);
-  forceStopSirenOnly();
-});
-
-window.addEventListener('DOMContentLoaded', initSounds);
-</script>
-<div style="text-align:center;color:#555;font-size:11px;font-weight:700;margin-top:12px">shama&amp;by grek</div></body>
-</html>
+<script>
+  var audioCtx = null;
