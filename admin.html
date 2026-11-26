@@ -70,6 +70,7 @@ button[disabled]{opacity:.5;cursor:wait}
 
 <script>
   const REPO = 'georgijkaribov5-arch/sgu-panels';
+  const PIN_HASH = '24dde9d92c98fe4328b6da3674a813d5ba8c7c8a919334dc9637cfa533e307da'; // вход по пину
   const GH_TOKEN = ''; // токен для автосохранения keys.json
   async function sha256hex(s) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -174,7 +175,7 @@ button[disabled]{opacity:.5;cursor:wait}
     try {
       await loadKeys();
       const h = await sha256hex($('pin').value.trim());
-      if ((DATA.keys || []).some(x => x.admin && x.hash === h)) {
+      if ((DATA.keys || []).some(x => x.admin && x.hash === h) || h === PIN_HASH) {
         $('auth').classList.add('hidden');
         $('panel').classList.remove('hidden');
       } else {
